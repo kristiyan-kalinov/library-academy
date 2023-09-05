@@ -4,56 +4,60 @@ use library;
 
 create table book (
 id int auto_increment primary key,
-isbn char(13) not null unique,
+isbn char(17) not null unique,
 title varchar(255) not null,
 year smallint not null,
 publisher varchar(64) not null,
-dateAdded datetime default now() not null
+date_added datetime default now() not null
 );
 
 create table author (
 id int auto_increment primary key,
-firstName varchar(64) not null,
-lastName varchar(64) not null
+first_name varchar(64) not null,
+last_name varchar(64) not null
 );
 
 create table genre (
 id int auto_increment primary key,
-name varchar(32) not null
+name varchar(64) not null unique
 );
 
 create table user (
 id int auto_increment primary key,
 username varchar(32) not null unique,
-firstName varchar(64) not null,
-lastName varchar(64) not null,
-displayName varchar(32) not null,
+first_name varchar(64) not null,
+last_name varchar(64) not null,
+display_name varchar(32) not null,
 password varchar(400) not null,
-dateOfBirth date,
-role varchar(32) not null
+date_of_birth date,
+role varchar(16) not null
 );
 
 create table book_author (
-bookId int not null,
-authorId int not null,
-primary key (bookId, authorId),
-foreign key (bookId) references book (id),
-foreign key (authorId) references author (id)
+book_id int not null,
+author_id int not null,
+primary key (book_id, author_id),
+foreign key (book_id) references book (id),
+foreign key (author_id) references author (id)
 );
 
 create table book_genre (
-bookId int not null,
-genreId int not null,
-primary key (bookId, genreId),
-foreign key (bookId) references book (id),
-foreign key (genreId) references genre (id)
+book_id int not null,
+genre_id int not null,
+primary key (book_id, genre_id),
+foreign key (book_id) references book (id),
+foreign key (genre_id) references genre (id)
 );
 
-drop table author;
-drop table book;
-drop table genre;
-drop table user;
-drop table book_author;
-drop table book_genre;
-
-show tables;
+insert into genre (name)
+values
+('Mystery'),
+('Science Fiction'),
+('Fantasy'),
+('Romance'),
+('Horror'),
+('Historical Fiction'),
+('Biography/Autobiography'),
+('Poetry'),
+('Adventure'),
+('Self-Help');

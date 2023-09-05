@@ -1,5 +1,6 @@
-package com.kodar.academy.Library.entity;
+package com.kodar.academy.Library.model.entity;
 
+import com.kodar.academy.Library.model.enums.Role;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -8,26 +9,21 @@ import java.time.LocalDate;
 @Table(name = "user")
 public class User {
 
-    private enum Role {
-        USER,
-        ADMIN
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
     @Column(name = "username")
     private String username;
-    @Column(name = "firstName")
+    @Column(name = "first_name")
     private String firstName;
-    @Column(name = "lastName")
+    @Column(name = "last_name")
     private String lastName;
-    @Column(name = "displayName")
+    @Column(name = "display_name")
     private String displayName;
     @Column(name = "password")
     private String password;
-    @Column(name = "dateOfBirth")
+    @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
@@ -49,6 +45,10 @@ public class User {
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getUsername() {
