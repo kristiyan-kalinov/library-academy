@@ -4,6 +4,7 @@ import com.kodar.academy.Library.model.dto.user.UserCPDTO;
 import com.kodar.academy.Library.model.dto.user.UserEditDTO;
 import com.kodar.academy.Library.model.dto.user.UserResponseDTO;
 import com.kodar.academy.Library.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +49,7 @@ public class UserController {
     }
 
     @PutMapping("/users/edit/{id}")
-    public ResponseEntity<UserResponseDTO> editUser(@PathVariable("id") int id, @RequestBody UserEditDTO userEditDTO) {
+    public ResponseEntity<UserResponseDTO> editUser(@PathVariable("id") int id, @Valid @RequestBody UserEditDTO userEditDTO) {
         UserResponseDTO userResponseDTO = userService.updateUser(id, userEditDTO);
         return new ResponseEntity<>(userResponseDTO, HttpStatus.OK);
     }

@@ -1,11 +1,13 @@
 package com.kodar.academy.Library.model.dto.user;
 
 import com.kodar.academy.Library.model.enums.Role;
+import com.kodar.academy.Library.model.validation.UniqueUsername;
 
 import java.time.LocalDate;
 
 public class UserRegisterDTO {
 
+    @UniqueUsername
     private String username;
     private String firstName;
     private String lastName;

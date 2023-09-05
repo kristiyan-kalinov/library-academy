@@ -1,7 +1,11 @@
 package com.kodar.academy.Library.model.dto.user;
 
+import com.kodar.academy.Library.model.validation.MatchingOldUsername;
+import com.kodar.academy.Library.model.validation.UniqueUsername;
+
 public class UserEditDTO {
 
+    @MatchingOldUsername
     private String username;
     private String firstName;
     private String lastName;

@@ -39,7 +39,7 @@ public class Config {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(configurer ->
                 configurer
-                        .requestMatchers(HttpMethod.POST, "/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/authors").permitAll()
                         .requestMatchers(HttpMethod.GET, "/genres").permitAll()
                         .requestMatchers(HttpMethod.GET, "/books").permitAll()
@@ -51,7 +51,6 @@ public class Config {
                         .requestMatchers(HttpMethod.DELETE, "/users/delete/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/users/edit/**").hasAuthority("USER") //*
                         .requestMatchers(HttpMethod.PUT, "/users/change-password/**").hasAuthority("USER") //*
-                        .requestMatchers(HttpMethod.POST, "/logout").permitAll()
         );
 
         http.httpBasic(Customizer.withDefaults());
