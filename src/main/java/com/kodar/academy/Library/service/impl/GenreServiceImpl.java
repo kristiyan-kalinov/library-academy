@@ -7,8 +7,8 @@ import com.kodar.academy.Library.service.GenreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class GenreServiceImpl implements GenreService {
@@ -22,10 +22,9 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     public Set<GenreDTO> getAllGenres() {
-        Set<GenreDTO> genres = new HashSet<>();
-        genreRepository.findAll().stream()
+        Set<GenreDTO> genres = genreRepository.findAll().stream()
                 .map(GenreMapper::mapToResponse)
-                .forEach(genres::add);
+                .collect(Collectors.toSet());
         return genres;
     }
 }

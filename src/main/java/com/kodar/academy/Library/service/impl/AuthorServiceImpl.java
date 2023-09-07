@@ -7,7 +7,6 @@ import com.kodar.academy.Library.service.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,10 +21,9 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public List<AuthorDTO> getAllAuthors() {
-        List<AuthorDTO> authors = new ArrayList<>();
-        authorRepository.findAll().stream()
+        List<AuthorDTO> authors = authorRepository.findAll().stream()
                 .map(AuthorMapper::mapToResponse)
-                .forEach(authors::add);
+                .toList();
         return authors;
     }
 }

@@ -1,5 +1,6 @@
 package com.kodar.academy.Library.service;
 
+import com.kodar.academy.Library.model.dto.author.AuthorDTO;
 import com.kodar.academy.Library.model.dto.book.BookCreateDTO;
 import com.kodar.academy.Library.model.dto.book.BookResponseDTO;
 
@@ -14,5 +15,7 @@ public interface BookService {
     void deleteBook(int id);
 
     BookResponseDTO addBook(BookCreateDTO bookCreateDTO);
+
+    void addAuthor(AuthorDTO authorDTO);
 
 }

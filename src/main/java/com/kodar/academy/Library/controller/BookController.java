@@ -34,7 +34,7 @@ public class BookController {
     @GetMapping("/books/{id}")
     public ResponseEntity<BookResponseDTO> getBookById(@PathVariable("id") int id) {
         BookResponseDTO bookResponseDTO = bookService.getBookById(id);
-        if(bookResponseDTO.getIsbn() == null) {
+        if(bookResponseDTO == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(bookResponseDTO, HttpStatus.OK);
@@ -42,6 +42,9 @@ public class BookController {
 
     @DeleteMapping("/books/delete/{id}")
     public ResponseEntity<String> deleteBookById(@PathVariable("id") int id) {
+        if(bookService.getBookById(id) == null) {
+            return new ResponseEntity<>("Book with that id doesn't exist", HttpStatus.NOT_FOUND);
+        }
         bookService.deleteBook(id);
         return new ResponseEntity<>("Book successfully deleted", HttpStatus.OK);
     }
