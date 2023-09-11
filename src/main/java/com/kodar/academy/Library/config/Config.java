@@ -51,6 +51,7 @@ public class Config {
                         .requestMatchers(HttpMethod.DELETE, "/users/delete/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/users/edit/**").hasAuthority("USER") //*
                         .requestMatchers(HttpMethod.PUT, "/users/change-password/**").hasAuthority("USER") //*
+                        .requestMatchers(HttpMethod.PUT, "/books/edit/**").hasAuthority("ADMIN")
         );
 
         http.httpBasic(Customizer.withDefaults());

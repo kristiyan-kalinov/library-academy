@@ -2,6 +2,7 @@ package com.kodar.academy.Library.service.impl;
 
 import com.kodar.academy.Library.model.dto.author.AuthorDTO;
 import com.kodar.academy.Library.model.dto.book.BookCreateDTO;
+import com.kodar.academy.Library.model.dto.book.BookEditRequestDTO;
 import com.kodar.academy.Library.model.dto.book.BookResponseDTO;
 import com.kodar.academy.Library.model.entity.Author;
 import com.kodar.academy.Library.model.entity.Book;
@@ -83,6 +84,16 @@ public class BookServiceImpl implements BookService {
             author.setLastName(authorDTO.getLastName());
             authorRepository.save(author);
         };
+    }
+
+    @Override
+    @Transactional
+    public BookResponseDTO editBook(int id, BookEditRequestDTO bookEditRequestDTO) {
+        Book oldBook = bookRepository.findById(id).orElseThrow();
+        oldBook.setTitle(bookEditRequestDTO.getTitle());
+        oldBook.setPublisher(bookEditRequestDTO.getPublisher());
+        bookRepository.save(oldBook);
+        return BookMapper.mapToResponse(oldBook);
     }
 
 }

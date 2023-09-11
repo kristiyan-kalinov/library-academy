@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDTO updateUser(int id, UserEditDTO userEditDTO) {
+    public UserResponseDTO editUser(int id, UserEditDTO userEditDTO) {
 
         User oldUser = userRepository.findById(id).orElseThrow();
         oldUser.setUsername(userEditDTO.getUsername());
