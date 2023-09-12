@@ -65,24 +65,23 @@ public class BookServiceImpl implements BookService {
                 .map(genre -> genreRepository.findByName(genre.getName()).orElse(null))
                 .collect(Collectors.toSet()));
         book.setAuthors(bookCreateDTO.getAuthors().stream()
-                .map(author -> {
-                    addAuthor(author);
-                    return authorRepository.findByFirstNameAndLastName(author.getFirstName(), author.getLastName()).orElse(null);
-                })
+                .map(this::addOrFindAuthor)
                 .collect(Collectors.toSet()));
         bookRepository.save(book);
         return BookMapper.mapToResponse(book);
     }
 
-    //move to author service
     @Override
-    public void addAuthor(AuthorDTO authorDTO) {
-        if(authorRepository.findByFirstNameAndLastName(authorDTO.getFirstName(), authorDTO.getLastName()).isEmpty()) {
+    public Author addOrFindAuthor(AuthorDTO authorDTO) {
+        Author authorData = authorRepository.findByFirstNameAndLastName(authorDTO.getFirstName(), authorDTO.getLastName())
+                .orElse(null);
+        if(authorData == null) {
             Author author = new Author();
             author.setFirstName(authorDTO.getFirstName());
             author.setLastName(authorDTO.getLastName());
-            authorRepository.save(author);
+            return authorRepository.save(author);
         };
+        return authorData;
     }
 
 }
