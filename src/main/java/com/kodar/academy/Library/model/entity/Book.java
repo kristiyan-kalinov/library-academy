@@ -1,6 +1,6 @@
 package com.kodar.academy.Library.model.entity;
 
-import com.kodar.academy.Library.model.listener.BookHistoryListener;
+import com.kodar.academy.Library.model.eventlistener.BookHistoryListener;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

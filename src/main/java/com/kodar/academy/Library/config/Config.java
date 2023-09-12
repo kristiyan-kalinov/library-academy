@@ -47,7 +47,7 @@ public class Config {
                         .requestMatchers(HttpMethod.DELETE, "/books/delete/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/books").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/users").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/users/**").hasAuthority("USER") //ask about this
+                        .requestMatchers(HttpMethod.GET, "/users/**").hasAuthority("USER") //*
                         .requestMatchers(HttpMethod.DELETE, "/users/delete/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/users/edit/**").hasAuthority("USER") //*
                         .requestMatchers(HttpMethod.PUT, "/users/change-password/**").hasAuthority("USER") //*

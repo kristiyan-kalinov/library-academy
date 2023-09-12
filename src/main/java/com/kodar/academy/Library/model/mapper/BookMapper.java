@@ -3,6 +3,8 @@ package com.kodar.academy.Library.model.mapper;
 import com.kodar.academy.Library.model.dto.book.BookCreateDTO;
 import com.kodar.academy.Library.model.dto.book.BookResponseDTO;
 import com.kodar.academy.Library.model.entity.Book;
+import com.kodar.academy.Library.model.entity.BookAuditLog;
+import com.kodar.academy.Library.model.eventlistener.BookUpdateEvent;
 import com.kodar.academy.Library.repository.AuthorRepository;
 import com.kodar.academy.Library.repository.GenreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +45,19 @@ public class BookMapper {
         target.setTitle(source.getTitle());
         target.setYear(source.getYear());
         target.setPublisher(source.getPublisher());
+        return target;
+    }
+
+    public static BookAuditLog mapToBookAuditLog(BookUpdateEvent source) {
+        BookAuditLog target = new BookAuditLog();
+        target.setActionPerformed(source.getActionPerformed());
+        target.setBookId(source.getBookId());
+        target.setTimestamp(source.getEventTimestamp());
+        target.setPerformedBy(source.getPerformedBy());
+        target.setOldTitleValue(source.getOldTitleValue());
+        target.setNewTitleValue(source.getNewTitleValue());
+        target.setOldPublisherValue(source.getOldPublisherValue());
+        target.setNewPublisherValue(source.getNewPublisherValue());
         return target;
     }
 

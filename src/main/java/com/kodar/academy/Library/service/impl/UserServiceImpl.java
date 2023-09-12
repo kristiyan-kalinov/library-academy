@@ -6,6 +6,7 @@ import com.kodar.academy.Library.model.dto.user.UserRegisterDTO;
 import com.kodar.academy.Library.model.dto.user.UserResponseDTO;
 import com.kodar.academy.Library.model.entity.User;
 import com.kodar.academy.Library.model.mapper.UserMapper;
+import com.kodar.academy.Library.repository.BookAuditLogRepository;
 import com.kodar.academy.Library.repository.UserRepository;
 import com.kodar.academy.Library.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +21,14 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final BookAuditLogRepository bookAuditLogRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,
+                           BookAuditLogRepository bookAuditLogRepository) {
         this.userRepository = userRepository;
+        this.bookAuditLogRepository = bookAuditLogRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -75,6 +79,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(int id) {
+        Optional<User> user = userRepository.findById(id);
+        if(user.isPresent()) {
+            bookAuditLogRepository.setUserIdToNull(user.get().getUsername());
+        }
         userRepository.deleteById(id);
     }
 
