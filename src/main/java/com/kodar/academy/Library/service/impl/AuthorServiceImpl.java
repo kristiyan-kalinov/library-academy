@@ -1,6 +1,7 @@
 package com.kodar.academy.Library.service.impl;
 
 import com.kodar.academy.Library.model.dto.author.AuthorDTO;
+import com.kodar.academy.Library.model.entity.Author;
 import com.kodar.academy.Library.model.mapper.AuthorMapper;
 import com.kodar.academy.Library.repository.AuthorRepository;
 import com.kodar.academy.Library.service.AuthorService;
@@ -25,5 +26,18 @@ public class AuthorServiceImpl implements AuthorService {
                 .map(AuthorMapper::mapToResponse)
                 .toList();
         return authors;
+    }
+
+    @Override
+    public Author addOrFindAuthor(AuthorDTO authorDTO) {
+        Author authorData = authorRepository.findByFirstNameAndLastName(authorDTO.getFirstName(), authorDTO.getLastName())
+                .orElse(null);
+        if(authorData == null) {
+            Author author = new Author();
+            author.setFirstName(authorDTO.getFirstName());
+            author.setLastName(authorDTO.getLastName());
+            return authorRepository.save(author);
+        };
+        return authorData;
     }
 }

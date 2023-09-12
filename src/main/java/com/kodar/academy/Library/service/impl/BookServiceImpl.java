@@ -1,14 +1,12 @@
 package com.kodar.academy.Library.service.impl;
 
-import com.kodar.academy.Library.model.dto.author.AuthorDTO;
 import com.kodar.academy.Library.model.dto.book.BookCreateDTO;
 import com.kodar.academy.Library.model.dto.book.BookResponseDTO;
-import com.kodar.academy.Library.model.entity.Author;
 import com.kodar.academy.Library.model.entity.Book;
 import com.kodar.academy.Library.model.mapper.BookMapper;
-import com.kodar.academy.Library.repository.AuthorRepository;
 import com.kodar.academy.Library.repository.BookRepository;
 import com.kodar.academy.Library.repository.GenreRepository;
+import com.kodar.academy.Library.service.AuthorService;
 import com.kodar.academy.Library.service.BookService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +21,14 @@ import java.util.stream.Collectors;
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
-    private final AuthorRepository authorRepository;
     private final GenreRepository genreRepository;
+    private final AuthorService authorService;
 
     @Autowired
-    public BookServiceImpl(BookRepository bookRepository, AuthorRepository authorRepository, GenreRepository genreRepository) {
+    public BookServiceImpl(BookRepository bookRepository, GenreRepository genreRepository, AuthorService authorService) {
         this.bookRepository = bookRepository;
-        this.authorRepository = authorRepository;
         this.genreRepository = genreRepository;
+        this.authorService = authorService;
     }
 
     @Override
@@ -65,23 +63,10 @@ public class BookServiceImpl implements BookService {
                 .map(genre -> genreRepository.findByName(genre.getName()).orElse(null))
                 .collect(Collectors.toSet()));
         book.setAuthors(bookCreateDTO.getAuthors().stream()
-                .map(this::addOrFindAuthor)
+                .map(authorService::addOrFindAuthor)
                 .collect(Collectors.toSet()));
         bookRepository.save(book);
         return BookMapper.mapToResponse(book);
-    }
-
-    @Override
-    public Author addOrFindAuthor(AuthorDTO authorDTO) {
-        Author authorData = authorRepository.findByFirstNameAndLastName(authorDTO.getFirstName(), authorDTO.getLastName())
-                .orElse(null);
-        if(authorData == null) {
-            Author author = new Author();
-            author.setFirstName(authorDTO.getFirstName());
-            author.setLastName(authorDTO.getLastName());
-            return authorRepository.save(author);
-        };
-        return authorData;
     }
 
 }

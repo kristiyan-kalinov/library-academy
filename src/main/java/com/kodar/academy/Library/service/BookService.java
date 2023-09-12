@@ -1,9 +1,7 @@
 package com.kodar.academy.Library.service;
 
-import com.kodar.academy.Library.model.dto.author.AuthorDTO;
 import com.kodar.academy.Library.model.dto.book.BookCreateDTO;
 import com.kodar.academy.Library.model.dto.book.BookResponseDTO;
-import com.kodar.academy.Library.model.entity.Author;
 
 import java.util.List;
 
@@ -16,7 +14,5 @@ public interface BookService {
     void deleteBook(int id);
 
     BookResponseDTO addBook(BookCreateDTO bookCreateDTO);
-
-    Author addOrFindAuthor(AuthorDTO authorDTO);
 
 }
