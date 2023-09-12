@@ -1,7 +1,8 @@
-package com.kodar.academy.Library.entity;
+package com.kodar.academy.Library.model.entity;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -10,14 +11,15 @@ public class Genre {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
     @Column(name = "name")
     private String name;
     @ManyToMany
     @JoinTable(
             name = "book_genre",
-            joinColumns = @JoinColumn(name = "genreId"),
-            inverseJoinColumns = @JoinColumn(name = "bookId")
+            joinColumns = @JoinColumn(name = "genre_id"),
+            inverseJoinColumns = @JoinColumn(name = "book_id")
     )
     private Set<Book> books;
 
@@ -34,6 +36,10 @@ public class Genre {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }
@@ -48,5 +54,16 @@ public class Genre {
 
     public void setBooks(Set<Book> books) {
         this.books = books;
+    }
+
+    public void addBook(Book book) {
+        if(this.books == null) {
+            this.books = new HashSet<>();
+        }
+        this.books.add(book);
+    }
+
+    public void removeBook(Book book) {
+        this.books.remove(book);
     }
 }

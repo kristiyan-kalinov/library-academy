@@ -1,8 +1,9 @@
-package com.kodar.academy.Library.entity;
+package com.kodar.academy.Library.model.entity;
 
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -21,20 +22,20 @@ public class Book {
     private short year;
     @Column(name = "publisher")
     private String publisher;
-    @Column(name = "dateAdded")
+    @Column(name = "date_added")
     private LocalDateTime dateAdded;
     @ManyToMany
     @JoinTable(
             name = "book_author",
-            joinColumns = @JoinColumn(name = "bookId"),
-            inverseJoinColumns = @JoinColumn(name = "authorId")
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "author_id")
     )
     private Set<Author> authors;
     @ManyToMany
     @JoinTable(
             name = "book_genre",
-            joinColumns = @JoinColumn(name = "bookId"),
-            inverseJoinColumns = @JoinColumn(name = "genreId")
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
     private Set<Genre> genres;
 
@@ -54,6 +55,10 @@ public class Book {
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getIsbn() {
@@ -110,5 +115,27 @@ public class Book {
 
     public void setGenres(Set<Genre> genres) {
         this.genres = genres;
+    }
+
+    public void addAuthor(Author author) {
+        if(this.authors == null) {
+            this.authors = new HashSet<>();
+        }
+        this.authors.add(author);
+    }
+
+    public void removeAuthor(Author author) {
+        this.authors.remove(author);
+    }
+
+    public void addGenre(Genre genre) {
+        if (this.genres == null) {
+            this.genres = new HashSet<>();
+        }
+        this.genres.add(genre);
+    }
+
+    public void removeGenre(Genre genre) {
+        this.genres.remove(genre);
     }
 }
