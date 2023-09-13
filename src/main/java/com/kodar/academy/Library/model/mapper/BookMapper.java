@@ -1,5 +1,6 @@
 package com.kodar.academy.Library.model.mapper;
 
+import com.kodar.academy.Library.model.constants.Constants;
 import com.kodar.academy.Library.model.dto.book.BookCreateDTO;
 import com.kodar.academy.Library.model.dto.book.BookResponseDTO;
 import com.kodar.academy.Library.model.entity.Book;
@@ -8,8 +9,11 @@ import com.kodar.academy.Library.model.eventlistener.BookUpdateEvent;
 import com.kodar.academy.Library.repository.AuthorRepository;
 import com.kodar.academy.Library.repository.GenreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 @Component
@@ -54,10 +58,19 @@ public class BookMapper {
         target.setBookId(source.getBookId());
         target.setTimestamp(source.getEventTimestamp());
         target.setPerformedBy(source.getPerformedBy());
-        target.setOldTitleValue(source.getOldTitleValue());
-        target.setNewTitleValue(source.getNewTitleValue());
-        target.setOldPublisherValue(source.getOldPublisherValue());
-        target.setNewPublisherValue(source.getNewPublisherValue());
+        target.setOldValue(source.getOldValue());
+        target.setNewValue(source.getNewValue());
+        return target;
+    }
+
+    public static BookAuditLog mapToBookAuditLog(Book source) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        BookAuditLog target = new BookAuditLog();
+        target.setActionPerformed(Constants.CREATE_ACTION);
+        target.setTimestamp(LocalDateTime.now());
+        target.setBookId(source.getId());
+        target.setPerformedBy(authentication.getName());
         return target;
     }
 

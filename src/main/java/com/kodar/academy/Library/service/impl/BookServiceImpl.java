@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -96,7 +97,7 @@ public class BookServiceImpl implements BookService {
             author.setFirstName(authorDTO.getFirstName());
             author.setLastName(authorDTO.getLastName());
             authorRepository.save(author);
-        };
+        }
     }
 
     @Override
@@ -109,10 +110,21 @@ public class BookServiceImpl implements BookService {
         String oldPublisher = oldBook.getPublisher();
         oldBook.setTitle(bookEditRequestDTO.getTitle());
         oldBook.setPublisher(bookEditRequestDTO.getPublisher());
-        bookRepository.save(oldBook);
-        publisher.publishEvent(new BookUpdateEvent(this, Constants.UPDATE_ACTION, id, LocalDateTime.now(),
-                authentication.getName(), oldTitle, bookEditRequestDTO.getTitle(),
-                oldPublisher, bookEditRequestDTO.getPublisher()));
+        List<BookUpdateEvent> bookUpdateEvents = new ArrayList<>();
+        if(!oldTitle.equals(bookEditRequestDTO.getTitle())) {
+            bookUpdateEvents.add(new BookUpdateEvent(this, Constants.UPDATE_ACTION + " title",
+                    id, LocalDateTime.now(), authentication.getName(), oldTitle, bookEditRequestDTO.getTitle()));
+        }
+        if(!oldPublisher.equals(bookEditRequestDTO.getPublisher())) {
+            bookUpdateEvents.add(new BookUpdateEvent(this, Constants.UPDATE_ACTION + " publisher",
+                    id, LocalDateTime.now(), authentication.getName(), oldPublisher, bookEditRequestDTO.getPublisher()));
+        }
+        if(!bookUpdateEvents.isEmpty()) {
+            bookRepository.save(oldBook);
+            for(BookUpdateEvent bue : bookUpdateEvents) {
+                publisher.publishEvent(bue);
+            }
+        }
         return BookMapper.mapToResponse(oldBook);
     }
 

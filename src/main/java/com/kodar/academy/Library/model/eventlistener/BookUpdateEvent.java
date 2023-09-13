@@ -10,23 +10,18 @@ public class BookUpdateEvent extends ApplicationEvent {
     private int bookId;
     private LocalDateTime eventTimestamp;
     private String performedBy;
-    private String oldTitleValue;
-    private String newTitleValue;
-    private String oldPublisherValue;
-    private String newPublisherValue;
+    private String oldValue;
+    private String newValue;
 
     public BookUpdateEvent(Object source, String actionPerformed, int bookId, LocalDateTime eventTimestamp,
-                           String performedBy, String oldTitleValue, String newTitleValue,
-                           String oldPublisherValue, String newPublisherValue) {
+                           String performedBy, String oldValue, String newValue) {
         super(source);
         this.actionPerformed = actionPerformed;
         this.bookId = bookId;
         this.eventTimestamp = eventTimestamp;
         this.performedBy = performedBy;
-        this.oldTitleValue = oldTitleValue;
-        this.newTitleValue = newTitleValue;
-        this.oldPublisherValue = oldPublisherValue;
-        this.newPublisherValue = newPublisherValue;
+        this.oldValue = oldValue;
+        this.newValue = newValue;
     }
 
     public String getActionPerformed() {
@@ -45,19 +40,11 @@ public class BookUpdateEvent extends ApplicationEvent {
         return performedBy;
     }
 
-    public String getOldTitleValue() {
-        return oldTitleValue;
+    public String getOldValue() {
+        return oldValue;
     }
 
-    public String getNewTitleValue() {
-        return newTitleValue;
-    }
-
-    public String getOldPublisherValue() {
-        return oldPublisherValue;
-    }
-
-    public String getNewPublisherValue() {
-        return newPublisherValue;
+    public String getNewValue() {
+        return newValue;
     }
 }
