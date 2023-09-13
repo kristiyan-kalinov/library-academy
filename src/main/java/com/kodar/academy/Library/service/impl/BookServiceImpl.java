@@ -1,18 +1,16 @@
 package com.kodar.academy.Library.service.impl;
 
 import com.kodar.academy.Library.model.constants.Constants;
-import com.kodar.academy.Library.model.dto.author.AuthorDTO;
 import com.kodar.academy.Library.model.dto.book.BookCreateDTO;
 import com.kodar.academy.Library.model.dto.book.BookEditRequestDTO;
 import com.kodar.academy.Library.model.dto.book.BookResponseDTO;
-import com.kodar.academy.Library.model.entity.Author;
 import com.kodar.academy.Library.model.entity.Book;
 import com.kodar.academy.Library.model.eventlistener.BookUpdateEvent;
 import com.kodar.academy.Library.model.mapper.BookMapper;
-import com.kodar.academy.Library.repository.AuthorRepository;
 import com.kodar.academy.Library.repository.BookAuditLogRepository;
 import com.kodar.academy.Library.repository.BookRepository;
 import com.kodar.academy.Library.repository.GenreRepository;
+import com.kodar.academy.Library.service.AuthorService;
 import com.kodar.academy.Library.service.BookService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,20 +29,20 @@ import java.util.stream.Collectors;
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
-    private final AuthorRepository authorRepository;
     private final GenreRepository genreRepository;
     private final BookAuditLogRepository bookAuditLogRepository;
     private final ApplicationEventPublisher publisher;
+    private final AuthorService authorService;
 
     @Autowired
-    public BookServiceImpl(BookRepository bookRepository, AuthorRepository authorRepository,
+    public BookServiceImpl(BookRepository bookRepository, AuthorService authorService,
                            GenreRepository genreRepository, BookAuditLogRepository bookAuditLogRepository,
                            ApplicationEventPublisher publisher) {
         this.bookRepository = bookRepository;
-        this.authorRepository = authorRepository;
         this.genreRepository = genreRepository;
         this.bookAuditLogRepository = bookAuditLogRepository;
         this.publisher = publisher;
+        this.authorService = authorService;
     }
 
     @Override
@@ -81,23 +79,10 @@ public class BookServiceImpl implements BookService {
                 .map(genre -> genreRepository.findByName(genre.getName()).orElse(null))
                 .collect(Collectors.toSet()));
         book.setAuthors(bookCreateDTO.getAuthors().stream()
-                .map(author -> {
-                    addAuthor(author);
-                    return authorRepository.findByFirstNameAndLastName(author.getFirstName(), author.getLastName()).orElse(null);
-                })
+                .map(authorService::addOrFindAuthor)
                 .collect(Collectors.toSet()));
         bookRepository.save(book);
         return BookMapper.mapToResponse(book);
-    }
-
-    @Override
-    public void addAuthor(AuthorDTO authorDTO) {
-        if(authorRepository.findByFirstNameAndLastName(authorDTO.getFirstName(), authorDTO.getLastName()).isEmpty()) {
-            Author author = new Author();
-            author.setFirstName(authorDTO.getFirstName());
-            author.setLastName(authorDTO.getLastName());
-            authorRepository.save(author);
-        }
     }
 
     @Override
@@ -127,5 +112,4 @@ public class BookServiceImpl implements BookService {
         }
         return BookMapper.mapToResponse(oldBook);
     }
-
 }
