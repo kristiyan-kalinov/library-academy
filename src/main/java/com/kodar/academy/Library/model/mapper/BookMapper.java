@@ -53,11 +53,13 @@ public class BookMapper {
     }
 
     public static BookAuditLog mapToBookAuditLog(BookUpdateEvent source) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
         BookAuditLog target = new BookAuditLog();
         target.setActionPerformed(source.getActionPerformed());
         target.setBookId(source.getBookId());
-        target.setTimestamp(source.getEventTimestamp());
-        target.setPerformedBy(source.getPerformedBy());
+        target.setTimestamp(LocalDateTime.now());
+        target.setPerformedBy(authentication.getName());
         target.setOldValue(source.getOldValue());
         target.setNewValue(source.getNewValue());
         return target;

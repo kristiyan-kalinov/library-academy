@@ -1,11 +1,12 @@
 package com.kodar.academy.Library.service.impl;
 
-import com.kodar.academy.Library.model.constants.Constants;
 import com.kodar.academy.Library.model.dto.book.BookCreateDTO;
 import com.kodar.academy.Library.model.dto.book.BookEditRequestDTO;
 import com.kodar.academy.Library.model.dto.book.BookResponseDTO;
 import com.kodar.academy.Library.model.entity.Book;
 import com.kodar.academy.Library.model.eventlistener.BookUpdateEvent;
+import com.kodar.academy.Library.model.eventlistener.BookUpdatePublisherEvent;
+import com.kodar.academy.Library.model.eventlistener.BookUpdateTitleEvent;
 import com.kodar.academy.Library.model.mapper.BookMapper;
 import com.kodar.academy.Library.repository.BookAuditLogRepository;
 import com.kodar.academy.Library.repository.BookRepository;
@@ -15,8 +16,6 @@ import com.kodar.academy.Library.service.BookService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -88,8 +87,6 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public BookResponseDTO editBook(int id, BookEditRequestDTO bookEditRequestDTO) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         Book oldBook = bookRepository.findById(id).orElseThrow();
         String oldTitle = oldBook.getTitle();
         String oldPublisher = oldBook.getPublisher();
@@ -97,12 +94,10 @@ public class BookServiceImpl implements BookService {
         oldBook.setPublisher(bookEditRequestDTO.getPublisher());
         List<BookUpdateEvent> bookUpdateEvents = new ArrayList<>();
         if(!oldTitle.equals(bookEditRequestDTO.getTitle())) {
-            bookUpdateEvents.add(new BookUpdateEvent(this, Constants.UPDATE_ACTION + " title",
-                    id, LocalDateTime.now(), authentication.getName(), oldTitle, bookEditRequestDTO.getTitle()));
+            bookUpdateEvents.add(new BookUpdateTitleEvent(oldTitle, oldBook));
         }
         if(!oldPublisher.equals(bookEditRequestDTO.getPublisher())) {
-            bookUpdateEvents.add(new BookUpdateEvent(this, Constants.UPDATE_ACTION + " publisher",
-                    id, LocalDateTime.now(), authentication.getName(), oldPublisher, bookEditRequestDTO.getPublisher()));
+            bookUpdateEvents.add(new BookUpdatePublisherEvent(oldPublisher, oldBook));
         }
         if(!bookUpdateEvents.isEmpty()) {
             bookRepository.save(oldBook);
