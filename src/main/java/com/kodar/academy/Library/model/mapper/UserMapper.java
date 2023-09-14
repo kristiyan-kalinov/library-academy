@@ -4,10 +4,14 @@ import com.kodar.academy.Library.model.dto.user.UserRegisterDTO;
 import com.kodar.academy.Library.model.dto.user.UserResponseDTO;
 import com.kodar.academy.Library.model.entity.User;
 import com.kodar.academy.Library.model.enums.Role;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UserMapper {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserMapper.class);
     public static UserResponseDTO mapToResponse(User source) {
+        logger.info("mapToResponse called");
         UserResponseDTO target = new UserResponseDTO();
         target.setUsername(source.getUsername());
         target.setDisplayName(source.getDisplayName());
@@ -18,6 +22,7 @@ public class UserMapper {
     }
 
     public static User mapToUser(UserRegisterDTO source) {
+        logger.info("mapToUser called");
         User target = new User();
         target.setUsername(source.getUsername());
         target.setFirstName(source.getFirstName());

@@ -8,6 +8,8 @@ import com.kodar.academy.Library.model.entity.BookAuditLog;
 import com.kodar.academy.Library.model.eventlistener.BookUpdateEvent;
 import com.kodar.academy.Library.repository.AuthorRepository;
 import com.kodar.academy.Library.repository.GenreRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,6 +23,7 @@ public class BookMapper {
 
     GenreRepository genreRepository;
     AuthorRepository authorRepository;
+    private static final Logger logger = LoggerFactory.getLogger(BookMapper.class);
 
     @Autowired
     public BookMapper(GenreRepository genreRepository, AuthorRepository authorRepository) {
@@ -29,6 +32,7 @@ public class BookMapper {
     }
 
     public static BookResponseDTO mapToResponse(Book source) {
+        logger.info("mapToResponse called");
         BookResponseDTO target = new BookResponseDTO();
         target.setIsbn(source.getIsbn());
         target.setTitle(source.getTitle());
@@ -44,6 +48,7 @@ public class BookMapper {
     }
 
     public static Book mapToBook(BookCreateDTO source) {
+        logger.info("mapToBook called");
         Book target = new Book();
         target.setIsbn(source.getIsbn());
         target.setTitle(source.getTitle());
@@ -53,6 +58,7 @@ public class BookMapper {
     }
 
     public static BookAuditLog mapToBookAuditLog(BookUpdateEvent source) {
+        logger.info("mapToBookAuditLog(fromBookUpdateEvent) called");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         BookAuditLog target = new BookAuditLog();
@@ -66,6 +72,7 @@ public class BookMapper {
     }
 
     public static BookAuditLog mapToBookAuditLog(Book source) {
+        logger.info("mapToBookAuditLog(fromBook) called");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         BookAuditLog target = new BookAuditLog();

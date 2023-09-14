@@ -70,4 +70,16 @@ public class BookCreateDTO {
     public void setAuthors(Set<AuthorDTO> authors) {
         this.authors = authors;
     }
+
+    @Override
+    public String toString() {
+        return "BookCreateDTO{" +
+                "isbn='" + isbn + '\'' +
+                ", title='" + title + '\'' +
+                ", publisher='" + publisher + '\'' +
+                ", year=" + year +
+                ", genres=" + genres +
+                ", authors=" + authors +
+                '}';
+    }
 }

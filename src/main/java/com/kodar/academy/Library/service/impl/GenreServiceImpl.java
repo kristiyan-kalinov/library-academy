@@ -4,6 +4,8 @@ import com.kodar.academy.Library.model.dto.genre.GenreDTO;
 import com.kodar.academy.Library.model.mapper.GenreMapper;
 import com.kodar.academy.Library.repository.GenreRepository;
 import com.kodar.academy.Library.service.GenreService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,7 @@ import java.util.stream.Collectors;
 public class GenreServiceImpl implements GenreService {
 
     private final GenreRepository genreRepository;
+    private static final Logger logger = LoggerFactory.getLogger(GenreServiceImpl.class);
 
     @Autowired
     public GenreServiceImpl(GenreRepository genreRepository) {
@@ -22,6 +25,7 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     public Set<GenreDTO> getAllGenres() {
+        logger.info("getAllGenres called");
         Set<GenreDTO> genres = genreRepository.findAll().stream()
                 .map(GenreMapper::mapToResponse)
                 .collect(Collectors.toSet());

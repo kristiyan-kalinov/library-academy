@@ -28,4 +28,12 @@ public class BookEditRequestDTO {
     public void setPublisher(String publisher) {
         this.publisher = publisher;
     }
+
+    @Override
+    public String toString() {
+        return "BookEditRequestDTO{" +
+                "title='" + title + '\'' +
+                ", publisher='" + publisher + '\'' +
+                '}';
+    }
 }

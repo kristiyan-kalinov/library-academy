@@ -9,6 +9,8 @@ import com.kodar.academy.Library.model.mapper.UserMapper;
 import com.kodar.academy.Library.repository.BookAuditLogRepository;
 import com.kodar.academy.Library.repository.UserRepository;
 import com.kodar.academy.Library.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final BookAuditLogRepository bookAuditLogRepository;
     private final PasswordEncoder passwordEncoder;
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,
@@ -34,6 +37,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO getUserById(int id) {
+        logger.info("getUserById called with params: " + id);
         Optional<User> userData = userRepository.findById(id);
         if(userData.isPresent()) {
             User user = userData.get();
@@ -44,7 +48,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserResponseDTO> getAllUsers() {
-
+        logger.info("getAllUsers called");
         List<UserResponseDTO> users = new ArrayList<>();
         userRepository.findAll().stream()
                 .map(UserMapper::mapToResponse)
@@ -56,6 +60,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO createUser(UserRegisterDTO userRegisterDTO) {
+        logger.info("createUser called with params: " + userRegisterDTO.toString());
         User user = UserMapper.mapToUser(userRegisterDTO);
         user.setPassword(passwordEncoder.encode(userRegisterDTO.getPassword()));
         userRepository.save(user);
@@ -66,7 +71,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO editUser(int id, UserEditDTO userEditDTO) {
-
+        logger.info("editUser called with params: " + id + ", " + userEditDTO.toString());
         User oldUser = userRepository.findById(id).orElseThrow();
         oldUser.setUsername(userEditDTO.getUsername());
         oldUser.setFirstName(userEditDTO.getFirstName());
@@ -79,6 +84,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(int id) {
+        logger.info("deleteUser called with params: " + id);
         Optional<User> user = userRepository.findById(id);
         if(user.isPresent()) {
             bookAuditLogRepository.setUserIdToNull(user.get().getUsername());
@@ -88,6 +94,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void changePassword(int id, UserCPDTO userCPDTO) {
+        logger.info("changePassword called with params: " + id);
         User oldUser = userRepository.findById(id).orElseThrow();
         oldUser.setPassword(passwordEncoder.encode(userCPDTO.getPassword()));
         userRepository.save(oldUser);
