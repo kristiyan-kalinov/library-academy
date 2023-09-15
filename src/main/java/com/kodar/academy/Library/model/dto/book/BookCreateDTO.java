@@ -73,7 +73,7 @@ public class BookCreateDTO {
 
     @Override
     public String toString() {
-        return "BookCreateDTO{" +
+        return "{" +
                 "isbn='" + isbn + '\'' +
                 ", title='" + title + '\'' +
                 ", publisher='" + publisher + '\'' +

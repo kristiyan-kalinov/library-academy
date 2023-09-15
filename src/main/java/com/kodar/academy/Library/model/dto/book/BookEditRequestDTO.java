@@ -31,7 +31,7 @@ public class BookEditRequestDTO {
 
     @Override
     public String toString() {
-        return "BookEditRequestDTO{" +
+        return "{" +
                 "title='" + title + '\'' +
                 ", publisher='" + publisher + '\'' +
                 '}';

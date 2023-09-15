@@ -94,7 +94,7 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public BookResponseDTO editBook(int id, BookEditRequestDTO bookEditRequestDTO) {
-        logger.info("editBook called with params: " + id + ", " + bookEditRequestDTO.toString());
+        logger.info("editBook called for book with id: " + id + " and params: " + bookEditRequestDTO.toString());
         Book oldBook = bookRepository.findById(id).orElseThrow();
         String oldTitle = oldBook.getTitle();
         String oldPublisher = oldBook.getPublisher();

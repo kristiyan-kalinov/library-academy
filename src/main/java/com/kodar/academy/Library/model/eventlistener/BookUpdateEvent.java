@@ -33,7 +33,7 @@ public class BookUpdateEvent {
 
     @Override
     public String toString() {
-        return "BookUpdateEvent{" +
+        return "{" +
                 "actionPerformed='" + actionPerformed + '\'' +
                 ", bookId=" + bookId +
                 ", oldValue='" + oldValue + '\'' +

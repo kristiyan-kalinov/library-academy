@@ -57,7 +57,7 @@ public class UserEditDTO {
 
     @Override
     public String toString() {
-        return "UserEditDTO{" +
+        return "{" +
                 "username='" + username + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +

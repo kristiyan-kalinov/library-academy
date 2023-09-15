@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserResponseDTO editUser(int id, UserEditDTO userEditDTO) {
-        logger.info("editUser called with params: " + id + ", " + userEditDTO.toString());
+        logger.info("editUser called for user with id: " + id + " and params: " + userEditDTO.toString());
         User oldUser = userRepository.findById(id).orElseThrow();
         oldUser.setUsername(userEditDTO.getUsername());
         oldUser.setFirstName(userEditDTO.getFirstName());
@@ -98,7 +98,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void changePassword(int id, UserCPDTO userCPDTO) {
-        logger.info("changePassword called with params: " + id);
+        logger.info("changePassword called for user with id: " + id);
         User oldUser = userRepository.findById(id).orElseThrow();
         oldUser.setPassword(passwordEncoder.encode(userCPDTO.getPassword()));
         userRepository.save(oldUser);

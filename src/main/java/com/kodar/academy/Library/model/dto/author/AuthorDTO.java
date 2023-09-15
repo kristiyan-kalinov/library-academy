@@ -34,7 +34,7 @@ public class AuthorDTO {
 
     @Override
     public String toString() {
-        return "AuthorDTO{" +
+        return "{" +
                 "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 '}';
