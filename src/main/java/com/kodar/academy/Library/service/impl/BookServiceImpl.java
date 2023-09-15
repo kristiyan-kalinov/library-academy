@@ -98,13 +98,13 @@ public class BookServiceImpl implements BookService {
         Book oldBook = bookRepository.findById(id).orElseThrow();
         String oldTitle = oldBook.getTitle();
         String oldPublisher = oldBook.getPublisher();
-        oldBook.setTitle(bookEditRequestDTO.getTitle());
-        oldBook.setPublisher(bookEditRequestDTO.getPublisher());
         List<BookUpdateEvent> bookUpdateEvents = new ArrayList<>();
         if(!oldTitle.equals(bookEditRequestDTO.getTitle())) {
+            oldBook.setTitle(bookEditRequestDTO.getTitle());
             bookUpdateEvents.add(new BookUpdateTitleEvent(oldTitle, oldBook));
         }
         if(!oldPublisher.equals(bookEditRequestDTO.getPublisher())) {
+            oldBook.setPublisher(bookEditRequestDTO.getPublisher());
             bookUpdateEvents.add(new BookUpdatePublisherEvent(oldPublisher, oldBook));
         }
         if(!bookUpdateEvents.isEmpty()) {

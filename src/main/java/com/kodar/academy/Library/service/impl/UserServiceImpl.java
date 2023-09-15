@@ -11,6 +11,7 @@ import com.kodar.academy.Library.repository.UserRepository;
 import com.kodar.academy.Library.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -59,6 +60,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserResponseDTO createUser(UserRegisterDTO userRegisterDTO) {
         logger.info("createUser called with params: " + userRegisterDTO.toString());
         User user = UserMapper.mapToUser(userRegisterDTO);
@@ -70,6 +72,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserResponseDTO editUser(int id, UserEditDTO userEditDTO) {
         logger.info("editUser called with params: " + id + ", " + userEditDTO.toString());
         User oldUser = userRepository.findById(id).orElseThrow();
@@ -83,6 +86,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteUser(int id) {
         logger.info("deleteUser called with params: " + id);
         Optional<User> user = userRepository.findById(id);
