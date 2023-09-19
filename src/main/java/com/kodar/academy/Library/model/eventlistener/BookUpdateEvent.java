@@ -30,4 +30,14 @@ public class BookUpdateEvent {
     public String getNewValue() {
         return newValue;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "actionPerformed='" + actionPerformed + '\'' +
+                ", bookId=" + bookId +
+                ", oldValue='" + oldValue + '\'' +
+                ", newValue='" + newValue + '\'' +
+                '}';
+    }
 }

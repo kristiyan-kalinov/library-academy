@@ -14,6 +14,8 @@ import com.kodar.academy.Library.repository.GenreRepository;
 import com.kodar.academy.Library.service.AuthorService;
 import com.kodar.academy.Library.service.BookService;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,7 @@ public class BookServiceImpl implements BookService {
     private final BookAuditLogRepository bookAuditLogRepository;
     private final ApplicationEventPublisher publisher;
     private final AuthorService authorService;
+    private static final Logger logger = LoggerFactory.getLogger(BookServiceImpl.class);
 
     @Autowired
     public BookServiceImpl(BookRepository bookRepository, AuthorService authorService,
@@ -46,6 +49,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<BookResponseDTO> getAllBooks() {
+        logger.info("getAllBooks called");
         List<BookResponseDTO> books = bookRepository.findAll().stream()
                 .map(BookMapper::mapToResponse)
                 .toList();
@@ -54,6 +58,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookResponseDTO getBookById(int id) {
+        logger.info("getBookById called with params: " + id);
         Optional<Book> bookData = bookRepository.findById(id);
         if(bookData.isPresent()) {
             Book book = bookData.get();
@@ -65,6 +70,7 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public void deleteBook(int id) {
+        logger.info("deleteBook called with params: " + id);
         bookAuditLogRepository.deleteAuditWhenDeletingBook(id);
         bookRepository.deleteById(id);
     }
@@ -72,6 +78,7 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public BookResponseDTO addBook(BookCreateDTO bookCreateDTO) {
+        logger.info("addBook called with params: " + bookCreateDTO.toString());
         Book book = BookMapper.mapToBook(bookCreateDTO);
         book.setDateAdded(LocalDateTime.now());
         book.setGenres(bookCreateDTO.getGenres().stream()
@@ -87,6 +94,7 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public BookResponseDTO editBook(int id, BookEditRequestDTO bookEditRequestDTO) {
+        logger.info("editBook called for book with id: " + id + " and params: " + bookEditRequestDTO.toString());
         Book oldBook = bookRepository.findById(id).orElseThrow();
         String oldTitle = oldBook.getTitle();
         String oldPublisher = oldBook.getPublisher();
