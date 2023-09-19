@@ -12,7 +12,7 @@ public interface UserService {
     UserResponseDTO getUserById(int id);
     List<UserResponseDTO> getAllUsers();
     UserResponseDTO createUser(UserRegisterDTO userRegisterDTO);
-    UserResponseDTO updateUser(int id, UserEditDTO userEditDTO);
+    UserResponseDTO editUser(int id, UserEditDTO userEditDTO);
     void deleteUser(int id);
     void changePassword(int id, UserCPDTO userCPDTO);
 

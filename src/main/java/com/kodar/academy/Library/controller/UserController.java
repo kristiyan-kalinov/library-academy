@@ -45,7 +45,7 @@ public class UserController {
     @DeleteMapping("/users/delete/{id}")
     public ResponseEntity<String> deleteUserById(@PathVariable("id") int id) {
         if(userService.getUserById(id) == null) {
-            return new ResponseEntity<>("User with that id doesn't exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("User with that id doesn't exist", HttpStatus.BAD_REQUEST);
         }
         userService.deleteUser(id);
         return new ResponseEntity<>("User successfully deleted", HttpStatus.OK);
@@ -54,16 +54,16 @@ public class UserController {
     @PutMapping("/users/edit/{id}")
     public ResponseEntity<?> editUser(@PathVariable("id") int id, @Valid @RequestBody UserEditDTO userEditDTO) {
         if(userService.getUserById(id) == null) {
-            return new ResponseEntity<>("User with that id doesn't exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("User with that id doesn't exist", HttpStatus.BAD_REQUEST);
         }
-        UserResponseDTO userResponseDTO = userService.updateUser(id, userEditDTO);
+        UserResponseDTO userResponseDTO = userService.editUser(id, userEditDTO);
         return new ResponseEntity<>(userResponseDTO, HttpStatus.OK);
     }
 
     @PutMapping("/users/change-password/{id}")
-    public ResponseEntity<String> changePassword(@PathVariable("id") int id, @RequestBody UserCPDTO userCPDTO) {
+    public ResponseEntity<String> changePassword(@PathVariable("id") int id, @Valid @RequestBody UserCPDTO userCPDTO) {
         if(userService.getUserById(id) == null) {
-            return new ResponseEntity<>("User with that id doesn't exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("User with that id doesn't exist", HttpStatus.BAD_REQUEST);
         }
         userService.changePassword(id, userCPDTO);
         return new ResponseEntity<>("Password changed successfully", HttpStatus.OK);

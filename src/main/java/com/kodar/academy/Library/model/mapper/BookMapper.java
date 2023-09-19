@@ -1,13 +1,19 @@
 package com.kodar.academy.Library.model.mapper;
 
+import com.kodar.academy.Library.model.constants.Constants;
 import com.kodar.academy.Library.model.dto.book.BookCreateDTO;
 import com.kodar.academy.Library.model.dto.book.BookResponseDTO;
 import com.kodar.academy.Library.model.entity.Book;
+import com.kodar.academy.Library.model.entity.BookAuditLog;
+import com.kodar.academy.Library.model.eventlistener.BookUpdateEvent;
 import com.kodar.academy.Library.repository.AuthorRepository;
 import com.kodar.academy.Library.repository.GenreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 @Component
@@ -43,6 +49,30 @@ public class BookMapper {
         target.setTitle(source.getTitle());
         target.setYear(source.getYear());
         target.setPublisher(source.getPublisher());
+        return target;
+    }
+
+    public static BookAuditLog mapToBookAuditLog(BookUpdateEvent source) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        BookAuditLog target = new BookAuditLog();
+        target.setActionPerformed(source.getActionPerformed());
+        target.setBookId(source.getBookId());
+        target.setTimestamp(LocalDateTime.now());
+        target.setPerformedBy(authentication.getName());
+        target.setOldValue(source.getOldValue());
+        target.setNewValue(source.getNewValue());
+        return target;
+    }
+
+    public static BookAuditLog mapToBookAuditLog(Book source) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        BookAuditLog target = new BookAuditLog();
+        target.setActionPerformed(Constants.CREATE_ACTION);
+        target.setTimestamp(LocalDateTime.now());
+        target.setBookId(source.getId());
+        target.setPerformedBy(authentication.getName());
         return target;
     }
 
