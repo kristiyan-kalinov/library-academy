@@ -29,5 +29,8 @@ public class Specs {
             return builder.equal(bookAuthor.get(field), name);
         };
     }
+    public static Specification<Book> isActive(boolean isActive) {
+        return (root, query, builder) -> builder.equal(root.get("isActive"), isActive);
+    }
 
 }

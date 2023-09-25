@@ -38,6 +38,8 @@ public class BookMapper {
         target.setTitle(source.getTitle());
         target.setYear(source.getYear());
         target.setPublisher(source.getPublisher());
+        target.setIsActive(source.getIsActive());
+        target.setDeactivationReason(source.getDeactivationReason());
         target.setAuthors(source.getAuthors().stream()
                 .map(AuthorMapper::mapToResponse)
                 .collect(Collectors.toSet()));

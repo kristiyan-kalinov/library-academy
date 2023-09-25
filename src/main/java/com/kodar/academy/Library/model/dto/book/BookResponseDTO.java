@@ -11,6 +11,8 @@ public class BookResponseDTO {
     private String title;
     private short year;
     private String publisher;
+    private boolean isActive;
+    private String deactivationReason;
     private Set<AuthorDTO> authors;
     private Set<GenreDTO> genres;
 
@@ -44,6 +46,22 @@ public class BookResponseDTO {
 
     public void setPublisher(String publisher) {
         this.publisher = publisher;
+    }
+
+    public boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public String getDeactivationReason() {
+        return deactivationReason;
+    }
+
+    public void setDeactivationReason(String deactivationReason) {
+        this.deactivationReason = deactivationReason;
     }
 
     public Set<AuthorDTO> getAuthors() {

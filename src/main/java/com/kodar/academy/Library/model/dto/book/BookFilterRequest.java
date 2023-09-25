@@ -11,6 +11,7 @@ public class BookFilterRequest {
     private int[] genres;
     private String[] authorFirstName;
     private String[] authorLastName;
+    private boolean showAll = false;
 
     public String getTitle() {
         return title;
@@ -68,6 +69,14 @@ public class BookFilterRequest {
         this.authorLastName = authorLastName;
     }
 
+    public boolean getShowAll() {
+        return showAll;
+    }
+
+    public void setShowAll(boolean showAll) {
+        this.showAll = showAll;
+    }
+
     @Override
     public String toString() {
         return "{" +
@@ -78,6 +87,7 @@ public class BookFilterRequest {
                 ", genres=" + Arrays.toString(genres) +
                 ", authorFirstName=" + Arrays.toString(authorFirstName) +
                 ", authorLastName=" + Arrays.toString(authorLastName) +
+                ", showAll=" + showAll +
                 '}';
     }
 }
