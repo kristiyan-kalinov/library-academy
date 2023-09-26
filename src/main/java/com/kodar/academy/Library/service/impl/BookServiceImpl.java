@@ -121,8 +121,7 @@ public class BookServiceImpl implements BookService {
         return BookMapper.mapToResponse(oldBook);
     }
 
-    @Override
-    public Specification<Book> getSpecs(BookFilterRequest bookFilterRequest) {
+    private Specification<Book> getSpecs(BookFilterRequest bookFilterRequest) {
         logger.info("getSpecs called with params: " + bookFilterRequest.toString());
         Specification<Book> specification = null;
         if(bookFilterRequest.getTitle() != null) {
@@ -161,26 +160,26 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookResponseDTO changeStatus(int id, BookChangeStatusDTO bookChangeStatusDTO) {
         logger.info("changeStatus called for book with id: " + id + " and params: " + bookChangeStatusDTO.toString());
-        Book oldBook = bookRepository.findById(id).orElseThrow();
-        boolean oldStatus = oldBook.getIsActive();
-        String oldReason = oldBook.getDeactivationReason();
+        Book book = bookRepository.findById(id).orElseThrow();
+        boolean oldStatus = book.getIsActive();
+        String oldReason = book.getDeactivationReason();
         List<BookUpdateEvent> bookUpdateEvents = new ArrayList<>();
         if(oldStatus != bookChangeStatusDTO.getIsActive()) {
             if(!bookChangeStatusDTO.getIsActive()) {
-                oldBook.setIsActive(bookChangeStatusDTO.getIsActive());
-                oldBook.setDeactivationReason(bookChangeStatusDTO.getDeactivationReason().toString());
+                book.setIsActive(bookChangeStatusDTO.getIsActive());
+                book.setDeactivationReason(bookChangeStatusDTO.getDeactivationReason().toString());
             }
             else {
-                oldBook.setIsActive(bookChangeStatusDTO.getIsActive());
-                oldBook.setDeactivationReason(null);
+                book.setIsActive(bookChangeStatusDTO.getIsActive());
+                book.setDeactivationReason(null);
             }
-            bookUpdateEvents.add(new BookUpdateStatusEvent(String.valueOf(oldStatus), oldBook));
-            bookUpdateEvents.add(new BookUpdateDeactReasonEvent(oldReason, oldBook));
-            bookRepository.save(oldBook);
+            bookUpdateEvents.add(new BookUpdateStatusEvent(String.valueOf(oldStatus), book));
+            bookUpdateEvents.add(new BookUpdateDeactReasonEvent(oldReason, book));
+            bookRepository.save(book);
             for(BookUpdateEvent bue : bookUpdateEvents) {
                 publisher.publishEvent(bue);
             }
         }
-        return BookMapper.mapToResponse(oldBook);
+        return BookMapper.mapToResponse(book);
     }
 }
