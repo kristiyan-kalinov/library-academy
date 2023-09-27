@@ -1,13 +1,16 @@
 package com.kodar.academy.Library.service.impl;
 
+import com.kodar.academy.Library.model.constants.Constants;
 import com.kodar.academy.Library.model.dto.book.BookCreateDTO;
 import com.kodar.academy.Library.model.dto.book.BookEditRequestDTO;
+import com.kodar.academy.Library.model.dto.book.BookFilterRequest;
 import com.kodar.academy.Library.model.dto.book.BookResponseDTO;
 import com.kodar.academy.Library.model.entity.Book;
 import com.kodar.academy.Library.model.eventlistener.BookUpdateEvent;
 import com.kodar.academy.Library.model.eventlistener.BookUpdatePublisherEvent;
 import com.kodar.academy.Library.model.eventlistener.BookUpdateTitleEvent;
 import com.kodar.academy.Library.model.mapper.BookMapper;
+import com.kodar.academy.Library.model.specifications.Specs;
 import com.kodar.academy.Library.repository.BookAuditLogRepository;
 import com.kodar.academy.Library.repository.BookRepository;
 import com.kodar.academy.Library.repository.GenreRepository;
@@ -18,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -48,9 +52,9 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BookResponseDTO> getAllBooks() {
+    public List<BookResponseDTO> getAllBooks(BookFilterRequest bookFilterRequest) {
         logger.info("getAllBooks called");
-        List<BookResponseDTO> books = bookRepository.findAll().stream()
+        List<BookResponseDTO> books = bookRepository.findAll(getSpecs(bookFilterRequest)).stream()
                 .map(BookMapper::mapToResponse)
                 .toList();
         return books;
@@ -114,5 +118,39 @@ public class BookServiceImpl implements BookService {
             }
         }
         return BookMapper.mapToResponse(oldBook);
+    }
+
+    @Override
+    public Specification<Book> getSpecs(BookFilterRequest bookFilterRequest) {
+        logger.info("getSpecs called with params: " + bookFilterRequest.toString());
+        Specification<Book> specification = null;
+        if(bookFilterRequest.getTitle() != null) {
+            specification = Specs.fieldLike(Constants.TITLE, bookFilterRequest.getTitle()).and(specification);
+        }
+        if(bookFilterRequest.getPublisher() != null) {
+            specification = Specs.fieldLike(Constants.PUBLISHER, bookFilterRequest.getPublisher()).and(specification);
+        }
+        if(bookFilterRequest.getYearAfter() != null) {
+            specification = Specs.yearAfter(bookFilterRequest.getYearAfter()).and(specification);
+        }
+        if(bookFilterRequest.getYearBefore() != null) {
+            specification = Specs.yearBefore(bookFilterRequest.getYearBefore()).and(specification);
+        }
+        if(bookFilterRequest.getGenres() != null) {
+            for (int i = 0; i < bookFilterRequest.getGenres().length; i++) {
+                specification = Specs.hasGenre(bookFilterRequest.getGenres()[i]).and(specification);
+            }
+        }
+        if(bookFilterRequest.getAuthorFirstName() != null) {
+            for (int i = 0; i < bookFilterRequest.getAuthorFirstName().length; i++) {
+                specification = Specs.nameEqual(Constants.FIRST_NAME, bookFilterRequest.getAuthorFirstName()[i]).and(specification);
+            }
+        }
+        if(bookFilterRequest.getAuthorLastName() != null) {
+            for (int i = 0; i < bookFilterRequest.getAuthorLastName().length; i++) {
+                specification = Specs.nameEqual(Constants.LAST_NAME, bookFilterRequest.getAuthorLastName()[i]).and(specification);
+            }
+        }
+        return specification;
     }
 }

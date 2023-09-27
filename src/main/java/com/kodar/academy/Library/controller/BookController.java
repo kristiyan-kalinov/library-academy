@@ -2,6 +2,7 @@ package com.kodar.academy.Library.controller;
 
 import com.kodar.academy.Library.model.dto.book.BookCreateDTO;
 import com.kodar.academy.Library.model.dto.book.BookEditRequestDTO;
+import com.kodar.academy.Library.model.dto.book.BookFilterRequest;
 import com.kodar.academy.Library.model.dto.book.BookResponseDTO;
 import com.kodar.academy.Library.service.BookService;
 import jakarta.validation.Valid;
@@ -23,8 +24,8 @@ public class BookController {
     }
 
     @GetMapping("/books")
-    public ResponseEntity<List<BookResponseDTO>> getAllBooks() {
-        List<BookResponseDTO> books = bookService.getAllBooks();
+    public ResponseEntity<List<BookResponseDTO>> getAllBooks(BookFilterRequest bookFilterRequest) {
+        List<BookResponseDTO> books = bookService.getAllBooks(bookFilterRequest);
 
         if(books.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
