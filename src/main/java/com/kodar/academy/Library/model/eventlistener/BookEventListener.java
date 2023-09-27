@@ -25,4 +25,14 @@ public class BookEventListener {
         bookAuditLogService.createBookAuditLog(bookUpdatePublisherEvent);
     }
 
+    @EventListener
+    void handleUpdateStatusEvent(BookUpdateStatusEvent bookUpdateStatusEvent) {
+        bookAuditLogService.createBookAuditLog(bookUpdateStatusEvent);
+    }
+
+    @EventListener
+    void handleUpdateDeactReasonEvent(BookUpdateDeactReasonEvent bookUpdateDeactReasonEvent) {
+        bookAuditLogService.createBookAuditLog(bookUpdateDeactReasonEvent);
+    }
+
 }

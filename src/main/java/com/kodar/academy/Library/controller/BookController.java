@@ -1,9 +1,6 @@
 package com.kodar.academy.Library.controller;
 
-import com.kodar.academy.Library.model.dto.book.BookCreateDTO;
-import com.kodar.academy.Library.model.dto.book.BookEditRequestDTO;
-import com.kodar.academy.Library.model.dto.book.BookFilterRequest;
-import com.kodar.academy.Library.model.dto.book.BookResponseDTO;
+import com.kodar.academy.Library.model.dto.book.*;
 import com.kodar.academy.Library.service.BookService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,28 +23,17 @@ public class BookController {
     @GetMapping("/books")
     public ResponseEntity<List<BookResponseDTO>> getAllBooks(BookFilterRequest bookFilterRequest) {
         List<BookResponseDTO> books = bookService.getAllBooks(bookFilterRequest);
-
-        if(books.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
     @GetMapping("/books/{id}")
-    public ResponseEntity<BookResponseDTO> getBookById(@PathVariable("id") int id) {
+    public ResponseEntity<BookResponseDTO> getBookById(@PathVariable("id") int id) throws Exception {
         BookResponseDTO bookResponseDTO = bookService.getBookById(id);
-        if(bookResponseDTO == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
         return new ResponseEntity<>(bookResponseDTO, HttpStatus.OK);
     }
 
     @DeleteMapping("/books/delete/{id}")
-    public ResponseEntity<String> deleteBookById(@PathVariable("id") int id) {
-        if(bookService.getBookById(id) == null) {
-            return new ResponseEntity<>("Book with that id doesn't exist", HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<String> deleteBookById(@PathVariable("id") int id) throws Exception {
         bookService.deleteBook(id);
         return new ResponseEntity<>("Book successfully deleted", HttpStatus.OK);
     }
@@ -59,15 +45,18 @@ public class BookController {
     }
 
     @PutMapping("/books/edit/{id}")
-    public ResponseEntity<?> editBook(@PathVariable("id") int id,
+    public ResponseEntity<BookResponseDTO> editBook(@PathVariable("id") int id,
                                                     @Valid @RequestBody BookEditRequestDTO bookEditRequestDTO) {
-
-        if(bookService.getBookById(id) == null) {
-            return new ResponseEntity<>("Book with that id doesn't exist", HttpStatus.BAD_REQUEST);
-        }
         BookResponseDTO bookResponseDTO = bookService.editBook(id, bookEditRequestDTO);
         return new ResponseEntity<>(bookResponseDTO, HttpStatus.OK);
 
+    }
+
+    @PutMapping("/books/change-status/{id}")
+    public ResponseEntity<BookResponseDTO> changeStatus(@PathVariable("id") int id,
+                                                        @RequestBody BookChangeStatusDTO bookChangeStatusDTO) {
+        BookResponseDTO bookResponseDTO = bookService.changeStatus(id, bookChangeStatusDTO);
+        return new ResponseEntity<>(bookResponseDTO, HttpStatus.OK);
     }
 
 

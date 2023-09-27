@@ -1,14 +1,9 @@
 package com.kodar.academy.Library.service.impl;
 
 import com.kodar.academy.Library.model.constants.Constants;
-import com.kodar.academy.Library.model.dto.book.BookCreateDTO;
-import com.kodar.academy.Library.model.dto.book.BookEditRequestDTO;
-import com.kodar.academy.Library.model.dto.book.BookFilterRequest;
-import com.kodar.academy.Library.model.dto.book.BookResponseDTO;
+import com.kodar.academy.Library.model.dto.book.*;
 import com.kodar.academy.Library.model.entity.Book;
-import com.kodar.academy.Library.model.eventlistener.BookUpdateEvent;
-import com.kodar.academy.Library.model.eventlistener.BookUpdatePublisherEvent;
-import com.kodar.academy.Library.model.eventlistener.BookUpdateTitleEvent;
+import com.kodar.academy.Library.model.eventlistener.*;
 import com.kodar.academy.Library.model.mapper.BookMapper;
 import com.kodar.academy.Library.model.specifications.Specs;
 import com.kodar.academy.Library.repository.BookAuditLogRepository;
@@ -61,22 +56,28 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public BookResponseDTO getBookById(int id) {
+    public BookResponseDTO getBookById(int id) throws Exception {
         logger.info("getBookById called with params: " + id);
-        Optional<Book> bookData = bookRepository.findById(id);
-        if(bookData.isPresent()) {
-            Book book = bookData.get();
+        Book book = bookRepository.findById(id).orElseThrow();
+        if(book.getIsActive()) {
             return BookMapper.mapToResponse(book);
         }
-        return null;
+        else throw new Exception("Inactive books can't be accessed");
     }
 
     @Override
     @Transactional
-    public void deleteBook(int id) {
+    public void deleteBook(int id) throws Exception {
         logger.info("deleteBook called with params: " + id);
-        bookAuditLogRepository.deleteAuditWhenDeletingBook(id);
-        bookRepository.deleteById(id);
+        Optional<Book> book = bookRepository.findById(id);
+        if(book.isPresent()) {
+            if(!book.get().getIsActive()) {
+                bookAuditLogRepository.deleteAuditWhenDeletingBook(id);
+                bookRepository.deleteById(id);
+            }
+            else throw new Exception("Active books can't be deleted");
+        }
+        throw new Exception("Book with that id does not exist");
     }
 
     @Override
@@ -120,8 +121,7 @@ public class BookServiceImpl implements BookService {
         return BookMapper.mapToResponse(oldBook);
     }
 
-    @Override
-    public Specification<Book> getSpecs(BookFilterRequest bookFilterRequest) {
+    private Specification<Book> getSpecs(BookFilterRequest bookFilterRequest) {
         logger.info("getSpecs called with params: " + bookFilterRequest.toString());
         Specification<Book> specification = null;
         if(bookFilterRequest.getTitle() != null) {
@@ -151,6 +151,35 @@ public class BookServiceImpl implements BookService {
                 specification = Specs.nameEqual(Constants.LAST_NAME, bookFilterRequest.getAuthorLastName()[i]).and(specification);
             }
         }
+        if(!bookFilterRequest.getShowAll()) {
+            specification = Specs.isActive(true).and(specification);
+        }
         return specification;
+    }
+
+    @Override
+    public BookResponseDTO changeStatus(int id, BookChangeStatusDTO bookChangeStatusDTO) {
+        logger.info("changeStatus called for book with id: " + id + " and params: " + bookChangeStatusDTO.toString());
+        Book book = bookRepository.findById(id).orElseThrow();
+        boolean oldStatus = book.getIsActive();
+        String oldReason = book.getDeactivationReason();
+        List<BookUpdateEvent> bookUpdateEvents = new ArrayList<>();
+        if(oldStatus != bookChangeStatusDTO.getIsActive()) {
+            if(!bookChangeStatusDTO.getIsActive()) {
+                book.setIsActive(bookChangeStatusDTO.getIsActive());
+                book.setDeactivationReason(bookChangeStatusDTO.getDeactivationReason().toString());
+            }
+            else {
+                book.setIsActive(bookChangeStatusDTO.getIsActive());
+                book.setDeactivationReason(null);
+            }
+            bookUpdateEvents.add(new BookUpdateStatusEvent(String.valueOf(oldStatus), book));
+            bookUpdateEvents.add(new BookUpdateDeactReasonEvent(oldReason, book));
+            bookRepository.save(book);
+            for(BookUpdateEvent bue : bookUpdateEvents) {
+                publisher.publishEvent(bue);
+            }
+        }
+        return BookMapper.mapToResponse(book);
     }
 }

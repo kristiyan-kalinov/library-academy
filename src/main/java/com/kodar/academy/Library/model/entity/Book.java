@@ -26,6 +26,10 @@ public class Book {
     private String publisher;
     @Column(name = "date_added")
     private LocalDateTime dateAdded;
+    @Column(name = "is_active")
+    private boolean isActive;
+    @Column(name = "deactivation_reason")
+    private String deactivationReason;
     @ManyToMany
     @JoinTable(
             name = "book_author",
@@ -45,12 +49,16 @@ public class Book {
 
     }
 
-    public Book(String isbn, String title, short year, String publisher, LocalDateTime dateAdded, Set<Author> authors, Set<Genre> genres) {
+    public Book(String isbn, String title, short year, String publisher, LocalDateTime dateAdded,
+                boolean isActive, String deactivationReason,
+                Set<Author> authors, Set<Genre> genres) {
         this.isbn = isbn;
         this.title = title;
         this.year = year;
         this.publisher = publisher;
         this.dateAdded = dateAdded;
+        this.isActive = isActive;
+        this.deactivationReason = deactivationReason;
         this.authors = authors;
         this.genres = genres;
     }
@@ -101,6 +109,20 @@ public class Book {
 
     public void setDateAdded(LocalDateTime dateAdded) {
         this.dateAdded = dateAdded;
+    }
+
+    public boolean getIsActive() { return isActive; }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public String getDeactivationReason() {
+        return deactivationReason;
+    }
+
+    public void setDeactivationReason(String deactivationReason) {
+        this.deactivationReason = deactivationReason;
     }
 
     public Set<Author> getAuthors() {

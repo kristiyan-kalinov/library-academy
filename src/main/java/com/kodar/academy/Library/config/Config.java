@@ -52,6 +52,7 @@ public class Config {
                         .requestMatchers(HttpMethod.PUT, "/users/edit/**").hasAuthority("USER") //*
                         .requestMatchers(HttpMethod.PUT, "/users/change-password/**").hasAuthority("USER") //*
                         .requestMatchers(HttpMethod.PUT, "/books/edit/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/books/change-status/**").hasAuthority("ADMIN")
         );
 
         http.httpBasic(Customizer.withDefaults());
