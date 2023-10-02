@@ -16,5 +16,6 @@ public class Constants {
     public static final String GENRES = "genres";
     public static final String AUTHORS = "authors";
     public static final String IS_ACTIVE = "isActive";
-
+    public static final String UPDATE_TOTAL_QUANTITY_ACTION = "UPDATE total quantity";
+    public static final String UPDATE_AVAILABLE_QUANTITY_ACTION = "UPDATE available quantity";
 }

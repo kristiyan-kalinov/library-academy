@@ -2,6 +2,7 @@ package com.kodar.academy.Library.model.dto.book;
 
 import com.kodar.academy.Library.model.dto.author.AuthorDTO;
 import com.kodar.academy.Library.model.dto.genre.GenreDTO;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -22,6 +23,8 @@ public class BookCreateDTO {
     private short year;
     private Set<GenreDTO> genres;
     private Set<AuthorDTO> authors;
+    @Min(value = 0)
+    private int totalQuantity;
 
     public String getIsbn() {
         return isbn;
@@ -71,6 +74,14 @@ public class BookCreateDTO {
         this.authors = authors;
     }
 
+    public int getTotalQuantity() {
+        return totalQuantity;
+    }
+
+    public void setTotalQuantity(int totalQuantity) {
+        this.totalQuantity = totalQuantity;
+    }
+
     @Override
     public String toString() {
         return "{" +
@@ -80,6 +91,7 @@ public class BookCreateDTO {
                 ", year=" + year +
                 ", genres=" + genres +
                 ", authors=" + authors +
+                ", totalQuantity=" + totalQuantity +
                 '}';
     }
 }

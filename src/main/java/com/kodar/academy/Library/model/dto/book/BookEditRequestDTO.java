@@ -1,5 +1,6 @@
 package com.kodar.academy.Library.model.dto.book;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -12,6 +13,9 @@ public class BookEditRequestDTO {
     @NotBlank(message = "Publisher is required")
     @Size(min = 2, max = 64, message = "Publisher must be between 2 and 64 characters")
     private String publisher;
+
+    @Min(value = 0)
+    private int totalQuantity;
 
     public String getTitle() {
         return title;
@@ -29,11 +33,20 @@ public class BookEditRequestDTO {
         this.publisher = publisher;
     }
 
+    public int getTotalQuantity() {
+        return totalQuantity;
+    }
+
+    public void setTotalQuantity(int totalQuantity) {
+        this.totalQuantity = totalQuantity;
+    }
+
     @Override
     public String toString() {
         return "{" +
                 "title='" + title + '\'' +
                 ", publisher='" + publisher + '\'' +
+                ", totalQuantity='" + totalQuantity + '\'' +
                 '}';
     }
 }

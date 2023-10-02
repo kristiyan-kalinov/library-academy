@@ -4,6 +4,8 @@ import com.kodar.academy.Library.model.enums.Role;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "user")
@@ -28,12 +30,17 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private Role role;
+    @Column(name = "has_prolonged_rents")
+    private boolean hasProlongedRents;
+    @OneToMany(mappedBy = "user")
+    private Set<Rent> rents;
 
     public User() {
 
     }
 
-    public User(String username, String firstName, String lastName, String displayName, String password, LocalDate dateOfBirth, Role role) {
+    public User(String username, String firstName, String lastName, String displayName, String password,
+                LocalDate dateOfBirth, Role role, boolean hasProlongedRents, Set<Rent> rents) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -41,6 +48,8 @@ public class User {
         this.password = password;
         this.dateOfBirth = dateOfBirth;
         this.role = role;
+        this.hasProlongedRents = hasProlongedRents;
+        this.rents = rents;
     }
 
     public int getId() {
@@ -105,5 +114,28 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public boolean getHasProlongedRents() {
+        return hasProlongedRents;
+    }
+
+    public void setHasProlongedRents(boolean hasProlongedRents) {
+        this.hasProlongedRents = hasProlongedRents;
+    }
+
+    public Set<Rent> getRents() {
+        return rents;
+    }
+
+    public void setRents(Set<Rent> rents) {
+        this.rents = rents;
+    }
+
+    public void addRent(Rent rent) {
+        if(this.rents == null) {
+            this.rents = new HashSet<>();
+        }
+        this.rents.add(rent);
     }
 }

@@ -13,12 +13,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
-@Component
 public class BookMapper {
 
     GenreRepository genreRepository;
@@ -56,6 +54,9 @@ public class BookMapper {
         target.setTitle(source.getTitle());
         target.setYear(source.getYear());
         target.setPublisher(source.getPublisher());
+        target.setIsActive(true);
+        target.setAvailableQuantity(source.getTotalQuantity());
+        target.setTotalQuantity(source.getTotalQuantity());
         return target;
     }
 

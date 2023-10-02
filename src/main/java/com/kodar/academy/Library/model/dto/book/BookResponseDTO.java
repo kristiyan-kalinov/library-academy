@@ -13,6 +13,8 @@ public class BookResponseDTO {
     private String publisher;
     private boolean isActive;
     private String deactivationReason;
+    private int availableQuantity;
+    private int totalQuantity;
     private Set<AuthorDTO> authors;
     private Set<GenreDTO> genres;
 
@@ -62,6 +64,22 @@ public class BookResponseDTO {
 
     public void setDeactivationReason(String deactivationReason) {
         this.deactivationReason = deactivationReason;
+    }
+
+    public int getAvailableQuantity() {
+        return availableQuantity;
+    }
+
+    public void setAvailableQuantity(int availableQuantity) {
+        this.availableQuantity = availableQuantity;
+    }
+
+    public int getTotalQuantity() {
+        return totalQuantity;
+    }
+
+    public void setTotalQuantity(int totalQuantity) {
+        this.totalQuantity = totalQuantity;
     }
 
     public Set<AuthorDTO> getAuthors() {

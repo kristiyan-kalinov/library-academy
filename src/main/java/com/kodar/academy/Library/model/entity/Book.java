@@ -44,6 +44,10 @@ public class Book {
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
     private Set<Genre> genres;
+    @Column(name = "available_quantity")
+    private int availableQuantity;
+    @Column(name = "total_quantity")
+    private int totalQuantity;
 
     public Book() {
 
@@ -51,7 +55,8 @@ public class Book {
 
     public Book(String isbn, String title, short year, String publisher, LocalDateTime dateAdded,
                 boolean isActive, String deactivationReason,
-                Set<Author> authors, Set<Genre> genres) {
+                Set<Author> authors, Set<Genre> genres,
+                int availableQuantity, int totalQuantity) {
         this.isbn = isbn;
         this.title = title;
         this.year = year;
@@ -61,6 +66,8 @@ public class Book {
         this.deactivationReason = deactivationReason;
         this.authors = authors;
         this.genres = genres;
+        this.availableQuantity = availableQuantity;
+        this.totalQuantity = totalQuantity;
     }
 
     public int getId() {
@@ -139,6 +146,22 @@ public class Book {
 
     public void setGenres(Set<Genre> genres) {
         this.genres = genres;
+    }
+
+    public int getAvailableQuantity() {
+        return availableQuantity;
+    }
+
+    public void setAvailableQuantity(int availableQuantity) {
+        this.availableQuantity = availableQuantity;
+    }
+
+    public int getTotalQuantity() {
+        return totalQuantity;
+    }
+
+    public void setTotalQuantity(int totalQuantity) {
+        this.totalQuantity = totalQuantity;
     }
 
     public void addAuthor(Author author) {
