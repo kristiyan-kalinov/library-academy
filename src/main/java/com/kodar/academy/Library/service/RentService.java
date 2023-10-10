@@ -6,6 +6,8 @@ import com.kodar.academy.Library.model.entity.Book;
 import com.kodar.academy.Library.model.entity.Rent;
 import com.kodar.academy.Library.model.entity.User;
 import com.kodar.academy.Library.model.enums.Role;
+import com.kodar.academy.Library.model.exceptions.UserNotEligibleToRentException;
+import com.kodar.academy.Library.model.exceptions.UserNotFoundException;
 import com.kodar.academy.Library.model.mapper.RentMapper;
 import com.kodar.academy.Library.repository.BookRepository;
 import com.kodar.academy.Library.repository.RentRepository;
@@ -67,17 +69,26 @@ public class RentService {
             throw new Exception("Book out of stock");
         }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByUsername(authentication.getName()).orElseThrow();
+        User authUser = userRepository.findByUsername(authentication.getName()).orElseThrow();
+        User rentForUser;
         if(rentCreateDTO != null) {
-            if(rentCreateDTO.getUserId() != null && user.getRole().equals(Role.ADMIN)) {
-                user = userRepository.findById(rentCreateDTO.getUserId()).orElseThrow();
+            if(rentCreateDTO.getUserId() != null) {
+                rentForUser = userRepository.findById(rentCreateDTO.getUserId()).orElse(null);
+                if(rentForUser == null) {
+                    throw new UserNotFoundException(rentCreateDTO.getUserId());
+                }
+            }
+            else rentForUser = authUser;
+            if (authUser.getId() != rentForUser.getId() && !authUser.getRole().equals(Role.ADMIN)) {
+                throw new UserNotEligibleToRentException(authUser.getUsername(), rentForUser.getUsername());
             }
         }
-        if(user.getHasProlongedRents()) {
+        else rentForUser = authUser;
+        if(rentForUser.getHasProlongedRents()) {
             throw new Exception("User with prolonged rents can't rent books");
         }
         int counter = 0;
-        for(Rent r : user.getRents()) {
+        for(Rent r : rentForUser.getRents()) {
             if(r.getBook().getId() == bookId && r.getReturnDate() == null) {
                 throw new Exception("Can't rent the same book twice");
             }
@@ -90,7 +101,7 @@ public class RentService {
         }
         Rent rent = RentMapper.mapToRent(rentCreateDTO);
         rent.setBook(bookRepository.findById(bookId).orElseThrow());
-        rent.setUser(user);
+        rent.setUser(rentForUser);
         rentRepository.save(rent);
         book.setAvailableQuantity(book.getAvailableQuantity() - 1);
         bookRepository.save(book);
