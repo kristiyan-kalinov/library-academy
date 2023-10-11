@@ -138,7 +138,7 @@ public class RentService {
     }
 
     public String checkAuth(int id) {
-        Rent rent = rentRepository.findById(id).orElseThrow();
-        return rent.getUser().getUsername();
+        Rent rent = rentRepository.findById(id).orElse(null);
+        return rent == null ? null : rent.getUser().getUsername();
     }
 }

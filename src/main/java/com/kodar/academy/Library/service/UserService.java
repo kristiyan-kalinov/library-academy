@@ -95,7 +95,7 @@ public class UserService {
     }
 
     public String checkAuth(int id) {
-        User user = userRepository.findById(id).orElseThrow();
-        return user.getUsername();
+        User user = userRepository.findById(id).orElse(null);
+        return user == null ? null : user.getUsername();
     }
 }
