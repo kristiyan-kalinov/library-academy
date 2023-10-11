@@ -1,11 +1,9 @@
 package com.kodar.academy.Library.model.dto.book;
 
-import com.kodar.academy.Library.model.enums.Deactivation;
-
 public class BookChangeStatusDTO {
 
     private boolean isActive;
-    private Deactivation deactivationReason;
+    private String deactivationReason;
 
     public boolean getIsActive() {
         return isActive;
@@ -15,11 +13,11 @@ public class BookChangeStatusDTO {
         this.isActive = isActive;
     }
 
-    public Deactivation getDeactivationReason() {
+    public String getDeactivationReason() {
         return deactivationReason;
     }
 
-    public void setDeactivationReason(Deactivation deactivationReason) {
+    public void setDeactivationReason(String deactivationReason) {
         this.deactivationReason = deactivationReason;
     }
 

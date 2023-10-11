@@ -1,8 +1,8 @@
 package com.kodar.academy.Library.model.dto.user;
 
-import com.kodar.academy.Library.model.enums.Role;
 import com.kodar.academy.Library.model.validation.UniqueUsername;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -28,8 +28,8 @@ public class UserRegisterDTO {
     @NotBlank(message = "Password is required")
     @Size(min = 8, max = 32, message = "Password must be between 8 and 32 characters")
     private String password;
+    @Past
     private LocalDate dateOfBirth;
-    private Role role;
 
     public String getUsername() {
         return username;
@@ -79,14 +79,6 @@ public class UserRegisterDTO {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
     @Override
     public String toString() {
         return "{" +
@@ -95,7 +87,6 @@ public class UserRegisterDTO {
                 ", lastName='" + lastName + '\'' +
                 ", displayName='" + displayName + '\'' +
                 ", dateOfBirth=" + dateOfBirth +
-                ", role=" + role +
                 '}';
     }
 }

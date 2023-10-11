@@ -45,4 +45,9 @@ public class BookEventListener {
         bookAuditLogService.createBookAuditLog(bookUpdateAvailableQuantityEvent);
     }
 
+    @EventListener
+    void handleCreateEvent(BookCreateEvent bookCreateEvent) {
+        bookAuditLogService.createBookAuditLog(bookCreateEvent);
+    }
+
 }

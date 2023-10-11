@@ -22,13 +22,7 @@ public class AuthorController {
 
     @GetMapping("/authors")
     public ResponseEntity<List<AuthorDTO>> getAllAuthors() {
-        List<AuthorDTO> authors = authorService.getAllAuthors();
-
-        if(authors.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        return new ResponseEntity<>(authors, HttpStatus.OK);
+        return new ResponseEntity<>(authorService.getAllAuthors(), HttpStatus.OK);
     }
 
 }

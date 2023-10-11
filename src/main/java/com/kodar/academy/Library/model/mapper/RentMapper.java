@@ -1,12 +1,9 @@
 package com.kodar.academy.Library.model.mapper;
 
-import com.kodar.academy.Library.model.dto.rent.RentCreateDTO;
 import com.kodar.academy.Library.model.dto.rent.RentResponseDTO;
 import com.kodar.academy.Library.model.entity.Rent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.time.LocalDate;
 
 public class RentMapper {
 
@@ -20,20 +17,6 @@ public class RentMapper {
         target.setRentDate(source.getRentDate());
         target.setReturnDate(source.getReturnDate());
         target.setExpectedReturnDate(source.getExpectedReturnDate());
-        return target;
-    }
-
-    public static Rent mapToRent(RentCreateDTO source) {
-        logger.info("mapToRent called");
-        Rent target = new Rent();
-        target.setRentDate(LocalDate.now());
-        if(source == null || source.getExpectedReturnDate() == null) {
-            target.setExpectedReturnDate(LocalDate.now().plusMonths(1));
-        }
-        else {
-            target.setExpectedReturnDate(source.getExpectedReturnDate());
-        }
-        target.setReturnDate(null);
         return target;
     }
 

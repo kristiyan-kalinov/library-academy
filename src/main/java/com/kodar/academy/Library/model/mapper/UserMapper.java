@@ -43,7 +43,6 @@ public class UserMapper {
         target.setFirstName(source.getFirstName());
         target.setLastName(source.getLastName());
         target.setDisplayName(source.getDisplayName());
-        target.setPassword(source.getPassword());
         target.setRole(Role.USER);
         target.setDateOfBirth(source.getDateOfBirth());
         return target;

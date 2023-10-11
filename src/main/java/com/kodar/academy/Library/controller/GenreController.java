@@ -22,13 +22,7 @@ public class GenreController {
 
     @GetMapping("/genres")
     public ResponseEntity<Set<GenreDTO>> getAllGenres() {
-        Set<GenreDTO> genres = genreService.getAllGenres();
-
-        if(genres.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        return new ResponseEntity<>(genres, HttpStatus.OK);
+        return new ResponseEntity<>(genreService.getAllGenres(), HttpStatus.OK);
     }
 
 }

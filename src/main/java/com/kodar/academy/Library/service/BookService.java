@@ -3,13 +3,16 @@ package com.kodar.academy.Library.service;
 import com.kodar.academy.Library.model.constants.Constants;
 import com.kodar.academy.Library.model.dto.book.*;
 import com.kodar.academy.Library.model.entity.Book;
+import com.kodar.academy.Library.model.enums.Deactivation;
 import com.kodar.academy.Library.model.eventlistener.*;
+import com.kodar.academy.Library.model.exceptions.*;
 import com.kodar.academy.Library.model.mapper.BookMapper;
 import com.kodar.academy.Library.model.specifications.Specs;
 import com.kodar.academy.Library.repository.BookAuditLogRepository;
 import com.kodar.academy.Library.repository.BookRepository;
 import com.kodar.academy.Library.repository.GenreRepository;
 import jakarta.transaction.Transactional;
+import org.apache.commons.lang3.EnumUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +23,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,33 +56,37 @@ public class BookService {
                 .toList();
     }
 
-    public BookResponseDTO getBookById(int id) throws Exception {
+    public BookResponseDTO getBookById(int id) {
         logger.info("getBookById called with params: " + id);
-        Book book = bookRepository.findById(id).orElseThrow();
-        if(book.getIsActive()) {
-            return BookMapper.mapToResponse(book);
+        Book book = bookRepository.findById(id).orElse(null);
+        if(book != null) {
+            if(book.getIsActive()) {
+                return BookMapper.mapToResponse(book);
+            }
+            else throw new BookNotActiveException(id);
         }
-        else throw new Exception("Inactive books can't be accessed");
+        else throw new BookNotFoundException(id);
     }
 
     @Transactional
-    public void deleteBook(int id) throws Exception {
+    public void deleteBook(int id) {
         logger.info("deleteBook called with params: " + id);
-        Optional<Book> book = bookRepository.findById(id);
-        if(book.isPresent()) {
-            if(!book.get().getIsActive()) {
+        Book book = bookRepository.findById(id).orElse(null);
+        if(book != null) {
+            if(!book.getIsActive()) {
                 bookAuditLogRepository.deleteAuditWhenDeletingBook(id);
                 bookRepository.deleteById(id);
             }
-            else throw new Exception("Active books can't be deleted");
+            else throw new DeleteActiveBookException();
         }
-        else throw new Exception("Book with that id does not exist");
+        else throw new BookNotFoundException(id);
     }
 
     @Transactional
     public BookResponseDTO addBook(BookCreateDTO bookCreateDTO) {
         logger.info("addBook called with params: " + bookCreateDTO.toString());
         Book book = BookMapper.mapToBook(bookCreateDTO);
+        book.setIsActive(true);
         book.setDateAdded(LocalDateTime.now());
         book.setGenres(bookCreateDTO.getGenres().stream()
                 .map(genre -> genreRepository.findByName(genre.getName()).orElse(null))
@@ -88,50 +94,54 @@ public class BookService {
         book.setAuthors(bookCreateDTO.getAuthors().stream()
                 .map(authorService::addOrFindAuthor)
                 .collect(Collectors.toSet()));
-        bookRepository.save(book);
+        Book savedBook = bookRepository.save(book);
+        publisher.publishEvent(new BookCreateEvent(savedBook));
         return BookMapper.mapToResponse(book);
     }
 
     @Transactional
-    public BookResponseDTO editBook(int id, BookEditRequestDTO bookEditRequestDTO) throws Exception {
+    public BookResponseDTO editBook(int id, BookEditRequestDTO bookEditRequestDTO) {
         logger.info("editBook called for book with id: " + id + " and params: " + bookEditRequestDTO.toString());
-        Book oldBook = bookRepository.findById(id).orElseThrow();
-        String oldTitle = oldBook.getTitle();
-        String oldPublisher = oldBook.getPublisher();
-        int oldTotalQuantity = oldBook.getTotalQuantity();
-        int oldAvailableQuantity = oldBook.getAvailableQuantity();
+        Book book = bookRepository.findById(id).orElse(null);
+        if(book == null) {
+            throw new BookNotFoundException(id);
+        }
+        String oldTitle = book.getTitle();
+        String oldPublisher = book.getPublisher();
+        int oldTotalQuantity = book.getTotalQuantity();
+        int oldAvailableQuantity = book.getAvailableQuantity();
         int newTotalQuantity = bookEditRequestDTO.getTotalQuantity();
-        List<BookUpdateEvent> bookUpdateEvents = new ArrayList<>();
+        List<BookBaseEvent> bookUpdateEvents = new ArrayList<>();
         if(!oldTitle.equals(bookEditRequestDTO.getTitle())) {
-            oldBook.setTitle(bookEditRequestDTO.getTitle());
-            bookUpdateEvents.add(new BookUpdateTitleEvent(oldTitle, oldBook));
+            book.setTitle(bookEditRequestDTO.getTitle());
+            bookUpdateEvents.add(new BookUpdateTitleEvent(oldTitle, book));
         }
         if(!oldPublisher.equals(bookEditRequestDTO.getPublisher())) {
-            oldBook.setPublisher(bookEditRequestDTO.getPublisher());
-            bookUpdateEvents.add(new BookUpdatePublisherEvent(oldPublisher, oldBook));
+            book.setPublisher(bookEditRequestDTO.getPublisher());
+            bookUpdateEvents.add(new BookUpdatePublisherEvent(oldPublisher, book));
         }
         if(oldTotalQuantity != newTotalQuantity) {
             int diff = Math.abs(oldTotalQuantity - newTotalQuantity);
             if(oldTotalQuantity > newTotalQuantity) {
                 if(diff > oldAvailableQuantity) {
-                    throw new Exception("Insufficient total quantity");
+                    throw new InsufficientBookTotalQuantityException();
                 }
-                oldBook.setAvailableQuantity(oldAvailableQuantity - diff);
+                book.setAvailableQuantity(oldAvailableQuantity - diff);
             }
             else {
-                oldBook.setAvailableQuantity(oldAvailableQuantity + diff);
+                book.setAvailableQuantity(oldAvailableQuantity + diff);
             }
-            oldBook.setTotalQuantity(newTotalQuantity);
-            bookUpdateEvents.add(new BookUpdateTotalQuantityEvent(String.valueOf(oldTotalQuantity), oldBook));
-            bookUpdateEvents.add(new BookUpdateAvailableQuantityEvent(String.valueOf(oldAvailableQuantity), oldBook));
+            book.setTotalQuantity(newTotalQuantity);
+            bookUpdateEvents.add(new BookUpdateTotalQuantityEvent(String.valueOf(oldTotalQuantity), book));
+            bookUpdateEvents.add(new BookUpdateAvailableQuantityEvent(String.valueOf(oldAvailableQuantity), book));
         }
         if(!bookUpdateEvents.isEmpty()) {
-            bookRepository.save(oldBook);
-            for(BookUpdateEvent bue : bookUpdateEvents) {
+            bookRepository.save(book);
+            for(BookBaseEvent bue : bookUpdateEvents) {
                 publisher.publishEvent(bue);
             }
         }
-        return BookMapper.mapToResponse(oldBook);
+        return BookMapper.mapToResponse(book);
     }
 
     private Specification<Book> getSpecs(BookFilterRequest bookFilterRequest) {
@@ -172,23 +182,29 @@ public class BookService {
 
     public BookResponseDTO changeStatus(int id, BookChangeStatusDTO bookChangeStatusDTO) {
         logger.info("changeStatus called for book with id: " + id + " and params: " + bookChangeStatusDTO.toString());
-        Book book = bookRepository.findById(id).orElseThrow();
+        Book book = bookRepository.findById(id).orElse(null);
+        if(book == null) {
+            throw new BookNotFoundException(id);
+        }
         boolean oldStatus = book.getIsActive();
         String oldReason = book.getDeactivationReason();
-        List<BookUpdateEvent> bookUpdateEvents = new ArrayList<>();
+        List<BookBaseEvent> bookBaseEvents = new ArrayList<>();
         if(oldStatus != bookChangeStatusDTO.getIsActive()) {
             if(!bookChangeStatusDTO.getIsActive()) {
+                if(!EnumUtils.isValidEnum(Deactivation.class, bookChangeStatusDTO.getDeactivationReason())) {
+                    throw new InvalidDeactReasonException();
+                }
                 book.setIsActive(bookChangeStatusDTO.getIsActive());
-                book.setDeactivationReason(bookChangeStatusDTO.getDeactivationReason().toString());
+                book.setDeactivationReason(bookChangeStatusDTO.getDeactivationReason());
             }
             else {
                 book.setIsActive(bookChangeStatusDTO.getIsActive());
                 book.setDeactivationReason(null);
             }
-            bookUpdateEvents.add(new BookUpdateStatusEvent(String.valueOf(oldStatus), book));
-            bookUpdateEvents.add(new BookUpdateDeactReasonEvent(oldReason, book));
+            bookBaseEvents.add(new BookUpdateStatusEvent(String.valueOf(oldStatus), book));
+            bookBaseEvents.add(new BookUpdateDeactReasonEvent(oldReason, book));
             bookRepository.save(book);
-            for(BookUpdateEvent bue : bookUpdateEvents) {
+            for(BookBaseEvent bue : bookBaseEvents) {
                 publisher.publishEvent(bue);
             }
         }

@@ -1,5 +1,6 @@
 package com.kodar.academy.Library.controller;
 
+import com.kodar.academy.Library.model.constants.Constants;
 import com.kodar.academy.Library.model.dto.book.*;
 import com.kodar.academy.Library.model.dto.rent.RentCreateDTO;
 import com.kodar.academy.Library.model.dto.rent.RentResponseDTO;
@@ -30,36 +31,32 @@ public class BookController {
 
     @GetMapping("/books")
     public ResponseEntity<List<BookResponseDTO>> getAllBooks(BookFilterRequest bookFilterRequest) {
-        List<BookResponseDTO> books = bookService.getAllBooks(bookFilterRequest);
-        return new ResponseEntity<>(books, HttpStatus.OK);
+        return new ResponseEntity<>(bookService.getAllBooks(bookFilterRequest), HttpStatus.OK);
     }
 
     @GetMapping("/books/{id}")
-    public ResponseEntity<BookResponseDTO> getBookById(@PathVariable("id") int id) throws Exception {
-        BookResponseDTO bookResponseDTO = bookService.getBookById(id);
-        return new ResponseEntity<>(bookResponseDTO, HttpStatus.OK);
+    public ResponseEntity<BookResponseDTO> getBookById(@PathVariable("id") int id) {
+        return new ResponseEntity<>(bookService.getBookById(id), HttpStatus.OK);
     }
 
     @DeleteMapping("/books/delete/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<String> deleteBookById(@PathVariable("id") int id) throws Exception {
+    public ResponseEntity<String> deleteBookById(@PathVariable("id") int id) {
         bookService.deleteBook(id);
-        return new ResponseEntity<>("Book successfully deleted", HttpStatus.OK);
+        return new ResponseEntity<>(Constants.SUCCESSFUL_BOOK_DELETE, HttpStatus.OK);
     }
 
     @PostMapping("/books")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<BookResponseDTO> addBook(@Valid @RequestBody BookCreateDTO bookCreateDTO) {
-        BookResponseDTO bookResponseDTO = bookService.addBook(bookCreateDTO);
-        return new ResponseEntity<>(bookResponseDTO, HttpStatus.CREATED);
+        return new ResponseEntity<>(bookService.addBook(bookCreateDTO), HttpStatus.CREATED);
     }
 
     @PutMapping("/books/edit/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<BookResponseDTO> editBook(@PathVariable("id") int id,
-                                                    @Valid @RequestBody BookEditRequestDTO bookEditRequestDTO) throws Exception {
-        BookResponseDTO bookResponseDTO = bookService.editBook(id, bookEditRequestDTO);
-        return new ResponseEntity<>(bookResponseDTO, HttpStatus.OK);
+                                                    @Valid @RequestBody BookEditRequestDTO bookEditRequestDTO) {
+        return new ResponseEntity<>(bookService.editBook(id, bookEditRequestDTO), HttpStatus.OK);
 
     }
 
@@ -67,23 +64,20 @@ public class BookController {
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<BookResponseDTO> changeStatus(@PathVariable("id") int id,
                                                         @RequestBody BookChangeStatusDTO bookChangeStatusDTO) {
-        BookResponseDTO bookResponseDTO = bookService.changeStatus(id, bookChangeStatusDTO);
-        return new ResponseEntity<>(bookResponseDTO, HttpStatus.OK);
+        return new ResponseEntity<>(bookService.changeStatus(id, bookChangeStatusDTO), HttpStatus.OK);
     }
 
     @PostMapping("/books/rent/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<RentResponseDTO> rentBook(@PathVariable("id") int id,
-                                                    @RequestBody @Nullable RentCreateDTO rentCreateDTO) throws Exception {
-        RentResponseDTO rentResponseDTO = rentService.createRent(id, rentCreateDTO);
-        return new ResponseEntity<>(rentResponseDTO, HttpStatus.CREATED);
+                                                    @RequestBody @Nullable RentCreateDTO rentCreateDTO) {
+        return new ResponseEntity<>(rentService.createRent(id, rentCreateDTO), HttpStatus.CREATED);
     }
 
     @PutMapping("/rents/return/{id}")
     @PreAuthorize("@rentService.checkAuth(#id) == authentication.name")
-    public ResponseEntity<RentResponseDTO> returnBook(@PathVariable("id") int id) throws Exception {
-        RentResponseDTO rentResponseDTO = rentService.returnRent(id);
-        return new ResponseEntity<>(rentResponseDTO, HttpStatus.OK);
+    public ResponseEntity<RentResponseDTO> returnBook(@PathVariable("id") int id) {
+        return new ResponseEntity<>(rentService.returnRent(id), HttpStatus.OK);
     }
 
 }

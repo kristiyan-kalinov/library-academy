@@ -1,6 +1,5 @@
 package com.kodar.academy.Library.model.entity;
 
-import com.kodar.academy.Library.model.eventlistener.BookHistoryListener;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -8,7 +7,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@EntityListeners(BookHistoryListener.class)
 @Table(name = "book")
 public class Book {
 

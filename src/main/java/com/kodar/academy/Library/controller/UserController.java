@@ -1,5 +1,6 @@
 package com.kodar.academy.Library.controller;
 
+import com.kodar.academy.Library.model.constants.Constants;
 import com.kodar.academy.Library.model.dto.user.UserCPDTO;
 import com.kodar.academy.Library.model.dto.user.UserEditDTO;
 import com.kodar.academy.Library.model.dto.user.UserExtendedResponseDTO;
@@ -27,53 +28,33 @@ public class UserController {
     @GetMapping("/users")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
-        List<UserResponseDTO> users = userService.getAllUsers();
-
-        if(users.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        return new ResponseEntity<>(users, HttpStatus.OK);
+        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
     @GetMapping("/users/{id}")
     @PreAuthorize("hasAuthority('ADMIN') or @userService.checkAuth(#id) == authentication.name")
     public ResponseEntity<UserExtendedResponseDTO> getUserById(@PathVariable("id") int id) {
-        UserExtendedResponseDTO userExtendedResponseDTO = userService.getUserById(id);
-        if(userExtendedResponseDTO == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(userExtendedResponseDTO, HttpStatus.OK);
+        return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
     }
 
     @DeleteMapping("/users/delete/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> deleteUserById(@PathVariable("id") int id) {
-        if(userService.getUserById(id) == null) {
-            return new ResponseEntity<>("User with that id doesn't exist", HttpStatus.BAD_REQUEST);
-        }
         userService.deleteUser(id);
-        return new ResponseEntity<>("User successfully deleted", HttpStatus.OK);
+        return new ResponseEntity<>(Constants.SUCCESSFUL_USER_DELETE, HttpStatus.OK);
     }
 
     @PutMapping("/users/edit/{id}")
     @PreAuthorize("hasAuthority('ADMIN') or @userService.checkAuth(#id) == authentication.name")
     public ResponseEntity<?> editUser(@PathVariable("id") int id, @Valid @RequestBody UserEditDTO userEditDTO) {
-        if(userService.getUserById(id) == null) {
-            return new ResponseEntity<>("User with that id doesn't exist", HttpStatus.BAD_REQUEST);
-        }
-        UserResponseDTO userResponseDTO = userService.editUser(id, userEditDTO);
-        return new ResponseEntity<>(userResponseDTO, HttpStatus.OK);
+        return new ResponseEntity<>(userService.editUser(id, userEditDTO), HttpStatus.OK);
     }
 
     @PutMapping("/users/change-password/{id}")
     @PreAuthorize("hasAuthority('ADMIN') or @userService.checkAuth(#id) == authentication.name")
     public ResponseEntity<String> changePassword(@PathVariable("id") int id, @Valid @RequestBody UserCPDTO userCPDTO) {
-        if(userService.getUserById(id) == null) {
-            return new ResponseEntity<>("User with that id doesn't exist", HttpStatus.BAD_REQUEST);
-        }
         userService.changePassword(id, userCPDTO);
-        return new ResponseEntity<>("Password changed successfully", HttpStatus.OK);
+        return new ResponseEntity<>(Constants.SUCCESSFUL_PASSWORD_CHANGE, HttpStatus.OK);
     }
 
 }

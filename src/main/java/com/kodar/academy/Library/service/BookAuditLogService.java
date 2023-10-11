@@ -1,13 +1,17 @@
 package com.kodar.academy.Library.service;
 
 import com.kodar.academy.Library.model.entity.BookAuditLog;
-import com.kodar.academy.Library.model.eventlistener.BookUpdateEvent;
+import com.kodar.academy.Library.model.eventlistener.BookBaseEvent;
 import com.kodar.academy.Library.model.mapper.BookMapper;
 import com.kodar.academy.Library.repository.BookAuditLogRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 public class BookAuditLogService {
@@ -20,9 +24,14 @@ public class BookAuditLogService {
         this.bookAuditLogRepository = bookAuditLogRepository;
     }
 
-    public void createBookAuditLog(BookUpdateEvent bookUpdateEvent) {
-        logger.info("createBookAuditLog called with params: " + bookUpdateEvent.toString());
-        BookAuditLog bookAuditLog = BookMapper.mapToBookAuditLog(bookUpdateEvent);
+    public void createBookAuditLog(BookBaseEvent bookBaseEvent) {
+        logger.info("createBookAuditLog called with params: " + bookBaseEvent.toString());
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        BookAuditLog bookAuditLog = BookMapper.mapToBookAuditLog(bookBaseEvent);
+        bookAuditLog.setTimestamp(LocalDateTime.now());
+        bookAuditLog.setPerformedBy(authentication.getName());
         bookAuditLogRepository.save(bookAuditLog);
     }
 }

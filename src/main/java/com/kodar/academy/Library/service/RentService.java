@@ -6,8 +6,7 @@ import com.kodar.academy.Library.model.entity.Book;
 import com.kodar.academy.Library.model.entity.Rent;
 import com.kodar.academy.Library.model.entity.User;
 import com.kodar.academy.Library.model.enums.Role;
-import com.kodar.academy.Library.model.exceptions.UserNotEligibleToRentException;
-import com.kodar.academy.Library.model.exceptions.UserNotFoundException;
+import com.kodar.academy.Library.model.exceptions.*;
 import com.kodar.academy.Library.model.mapper.RentMapper;
 import com.kodar.academy.Library.repository.BookRepository;
 import com.kodar.academy.Library.repository.RentRepository;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RentService {
@@ -50,23 +48,25 @@ public class RentService {
 
     public RentResponseDTO getRentById(int id) {
         logger.info("getRentById called with params:" + id);
-        Optional<Rent> rentData = rentRepository.findById(id);
-        if(rentData.isPresent()) {
-            Rent rent = rentData.get();
+        Rent rent = rentRepository.findById(id).orElse(null);
+        if(rent != null) {
             return RentMapper.mapToResponse(rent);
         }
-        return null;
+        else throw new RentNotFoundException(id);
     }
 
     @Transactional
-    public RentResponseDTO createRent(int bookId, RentCreateDTO rentCreateDTO) throws Exception {
+    public RentResponseDTO createRent(int bookId, RentCreateDTO rentCreateDTO) {
         logger.info("createRent called for book with id: " + bookId + " with params:" + rentCreateDTO);
-        Book book = bookRepository.findById(bookId).orElseThrow();
+        Book book = bookRepository.findById(bookId).orElse(null);
+        if(book == null) {
+            throw new BookNotFoundException(bookId);
+        }
         if(!book.getIsActive()) {
-            throw new Exception("Inactive books can't be rented");
+            throw new BookNotActiveException(bookId);
         }
         if(book.getAvailableQuantity() < 1) {
-            throw new Exception("Book out of stock");
+            throw new InsufficientBookAvailableQuantityException();
         }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User authUser = userRepository.findByUsername(authentication.getName()).orElseThrow();
@@ -85,22 +85,29 @@ public class RentService {
         }
         else rentForUser = authUser;
         if(rentForUser.getHasProlongedRents()) {
-            throw new Exception("User with prolonged rents can't rent books");
+            throw new UserProlongedRentsException(rentForUser.getUsername());
         }
         int counter = 0;
         for(Rent r : rentForUser.getRents()) {
             if(r.getBook().getId() == bookId && r.getReturnDate() == null) {
-                throw new Exception("Can't rent the same book twice");
+                throw new DuplicateRentException();
             }
             if(r.getReturnDate() == null) {
                 counter++;
             }
         }
         if(counter > 2) {
-            throw new Exception("User reached max amount of rented books at once");
+            throw new RentCapException(rentForUser.getUsername());
         }
-        Rent rent = RentMapper.mapToRent(rentCreateDTO);
-        rent.setBook(bookRepository.findById(bookId).orElseThrow());
+        Rent rent = new Rent();
+        rent.setRentDate(LocalDate.now());
+        if(rentCreateDTO == null || rentCreateDTO.getExpectedReturnDate() == null) {
+            rent.setExpectedReturnDate(LocalDate.now().plusMonths(1));
+        }
+        else {
+            rent.setExpectedReturnDate(rentCreateDTO.getExpectedReturnDate());
+        }
+        rent.setBook(book);
         rent.setUser(rentForUser);
         rentRepository.save(rent);
         book.setAvailableQuantity(book.getAvailableQuantity() - 1);
@@ -109,9 +116,12 @@ public class RentService {
     }
 
     @Transactional
-    public RentResponseDTO returnRent(int id) throws Exception {
+    public RentResponseDTO returnRent(int id) {
         logger.info("returnRent called with params:" + id);
-        Rent rent = rentRepository.findById(id).orElseThrow();
+        Rent rent = rentRepository.findById(id).orElse(null);
+        if(rent == null) {
+            throw new RentNotFoundException(id);
+        }
         if(rent.getReturnDate() == null) {
             rent.setReturnDate(LocalDate.now());
             rentRepository.save(rent);
@@ -134,7 +144,7 @@ public class RentService {
             }
             return RentMapper.mapToResponse(rent);
         }
-        else throw new Exception("Book is already returned");
+        else throw new BookAlreadyReturnedException();
     }
 
     public String checkAuth(int id) {
