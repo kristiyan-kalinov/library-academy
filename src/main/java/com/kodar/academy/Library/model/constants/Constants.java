@@ -25,11 +25,8 @@ public class Constants {
     public static final String BOOK_NOT_FOUND = "Book with id %d not found";
     public static final String BOOK_NOT_ACTIVE = "Book with id %d is not active";
     public static final String INVALID_DEACT_REASON = "Invalid deactivation reason";
-    public static final String SUCCESSFUL_BOOK_DELETE = "Book successfully deleted";
     public static final String INSUFFICIENT_BOOK_TOTAL_QUANTITY = "Insufficient total quantity";
     public static final String INSUFFICIENT_BOOK_AVAILABLE_QUANTITY = "Book out of stock";
-    public static final String SUCCESSFUL_USER_DELETE = "User successfully deleted";
-    public static final String SUCCESSFUL_PASSWORD_CHANGE = "Password changed successfully";
     public static final String USER_NOT_FOUND = "User with id %d not found";
     public static final String USER_NOT_ELIGIBLE_TO_RENT = "User: %s can't rent a book for %s";
     public static final String RENT_NOT_FOUND = "Rent with id %d not found";
@@ -37,4 +34,8 @@ public class Constants {
     public static final String USER_PROLONGED_RENTS = "User: %s has prolonged rents";
     public static final String DUPLICATE_RENT = "Can't rent the same book twice";
     public static final String RENT_CAP_MSG = "User: %s reached max amount of rented books at once";
+    //controller messages
+    public static final String SUCCESSFUL_BOOK_DELETE = "Book successfully deleted";
+    public static final String SUCCESSFUL_USER_DELETE = "User successfully deleted";
+    public static final String SUCCESSFUL_PASSWORD_CHANGE = "Password changed successfully";
 }
