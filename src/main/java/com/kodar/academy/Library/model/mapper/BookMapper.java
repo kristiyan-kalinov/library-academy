@@ -5,25 +5,14 @@ import com.kodar.academy.Library.model.dto.book.BookResponseDTO;
 import com.kodar.academy.Library.model.entity.Book;
 import com.kodar.academy.Library.model.entity.BookAuditLog;
 import com.kodar.academy.Library.model.eventlistener.BookBaseEvent;
-import com.kodar.academy.Library.repository.AuthorRepository;
-import com.kodar.academy.Library.repository.GenreRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.stream.Collectors;
 
 public class BookMapper {
 
-    GenreRepository genreRepository;
-    AuthorRepository authorRepository;
     private static final Logger logger = LoggerFactory.getLogger(BookMapper.class);
-
-    @Autowired
-    public BookMapper(GenreRepository genreRepository, AuthorRepository authorRepository) {
-        this.genreRepository = genreRepository;
-        this.authorRepository = authorRepository;
-    }
 
     public static BookResponseDTO mapToResponse(Book source) {
         logger.info("mapToResponse called");
