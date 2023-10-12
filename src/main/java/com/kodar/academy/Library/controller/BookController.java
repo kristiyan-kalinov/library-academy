@@ -70,7 +70,7 @@ public class BookController {
     @PostMapping("/books/rent/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<RentResponseDTO> rentBook(@PathVariable("id") int id,
-                                                    @RequestBody @Nullable RentCreateDTO rentCreateDTO) {
+                                                    @Valid @RequestBody @Nullable RentCreateDTO rentCreateDTO) {
         return new ResponseEntity<>(rentService.createRent(id, rentCreateDTO), HttpStatus.CREATED);
     }
 
