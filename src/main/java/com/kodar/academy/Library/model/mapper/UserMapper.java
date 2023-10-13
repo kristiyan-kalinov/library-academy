@@ -1,5 +1,6 @@
 package com.kodar.academy.Library.model.mapper;
 
+import com.kodar.academy.Library.model.dto.user.UserExtendedResponseDTO;
 import com.kodar.academy.Library.model.dto.user.UserRegisterDTO;
 import com.kodar.academy.Library.model.dto.user.UserResponseDTO;
 import com.kodar.academy.Library.model.entity.User;
@@ -18,6 +19,20 @@ public class UserMapper {
         target.setFirstName(source.getFirstName());
         target.setLastName(source.getLastName());
         target.setDateOfBirth(source.getDateOfBirth());
+        target.setHasProlongedRents(source.getHasProlongedRents());
+        return target;
+    }
+
+    public static UserExtendedResponseDTO mapToExtendedResponse(User source) {
+        logger.info("mapToResponse called");
+        UserExtendedResponseDTO target = new UserExtendedResponseDTO();
+        target.setUsername(source.getUsername());
+        target.setDisplayName(source.getDisplayName());
+        target.setFirstName(source.getFirstName());
+        target.setLastName(source.getLastName());
+        target.setDateOfBirth(source.getDateOfBirth());
+        target.setHasProlongedRents(source.getHasProlongedRents());
+        target.setRents(source.getRents());
         return target;
     }
 
@@ -28,7 +43,6 @@ public class UserMapper {
         target.setFirstName(source.getFirstName());
         target.setLastName(source.getLastName());
         target.setDisplayName(source.getDisplayName());
-        target.setPassword(source.getPassword());
         target.setRole(Role.USER);
         target.setDateOfBirth(source.getDateOfBirth());
         return target;

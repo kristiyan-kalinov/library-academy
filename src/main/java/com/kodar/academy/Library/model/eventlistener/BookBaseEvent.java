@@ -1,14 +1,14 @@
 package com.kodar.academy.Library.model.eventlistener;
 
-public class BookUpdateEvent {
+public class BookBaseEvent {
 
     private String actionPerformed;
     private int bookId;
     private String oldValue;
     private String newValue;
 
-    public BookUpdateEvent(String actionPerformed, int bookId,
-                           String oldValue, String newValue) {
+    public BookBaseEvent(String actionPerformed, int bookId,
+                         String oldValue, String newValue) {
         this.actionPerformed = actionPerformed;
         this.bookId = bookId;
         this.oldValue = oldValue;

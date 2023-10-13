@@ -2,9 +2,10 @@ package com.kodar.academy.Library.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
@@ -14,6 +15,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import javax.sql.DataSource;
 
 @Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
 public class Config {
 
     @Bean
@@ -39,20 +42,7 @@ public class Config {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(configurer ->
                 configurer
-                        .requestMatchers(HttpMethod.POST, "/register").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/authors").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/genres").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/books").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/books/**").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/books/delete/**").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/books").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/users").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/users/**").hasAuthority("USER") //*
-                        .requestMatchers(HttpMethod.DELETE, "/users/delete/**").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/users/edit/**").hasAuthority("USER") //*
-                        .requestMatchers(HttpMethod.PUT, "/users/change-password/**").hasAuthority("USER") //*
-                        .requestMatchers(HttpMethod.PUT, "/books/edit/**").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/books/change-status/**").hasAuthority("ADMIN")
+                        .anyRequest().permitAll()
         );
 
         http.httpBasic(Customizer.withDefaults());

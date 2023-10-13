@@ -14,6 +14,8 @@ public class UserResponseDTO {
 
     private LocalDate dateOfBirth;
 
+    private boolean hasProlongedRents;
+
     public String getUsername() {
         return username;
     }
@@ -52,5 +54,13 @@ public class UserResponseDTO {
 
     public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+    }
+
+    public boolean getHasProlongedRents() {
+        return hasProlongedRents;
+    }
+
+    public void setHasProlongedRents(boolean hasProlongedRents) {
+        this.hasProlongedRents = hasProlongedRents;
     }
 }
