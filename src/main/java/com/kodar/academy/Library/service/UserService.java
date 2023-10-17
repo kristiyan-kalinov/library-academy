@@ -1,6 +1,10 @@
 package com.kodar.academy.Library.service;
 
-import com.kodar.academy.Library.model.dto.user.*;
+import com.kodar.academy.Library.model.dto.user.UserCPDTO;
+import com.kodar.academy.Library.model.dto.user.UserEditDTO;
+import com.kodar.academy.Library.model.dto.user.UserExtendedResponseDTO;
+import com.kodar.academy.Library.model.dto.user.UserRegisterDTO;
+import com.kodar.academy.Library.model.dto.user.UserResponseDTO;
 import com.kodar.academy.Library.model.entity.User;
 import com.kodar.academy.Library.model.exceptions.UserNotFoundException;
 import com.kodar.academy.Library.model.mapper.UserMapper;
@@ -14,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @Service

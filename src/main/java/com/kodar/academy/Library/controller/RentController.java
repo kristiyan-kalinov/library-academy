@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 public class RentController {
 
-    RentService rentService;
+    private final RentService rentService;
 
     @Autowired
     public RentController(RentService rentService) {

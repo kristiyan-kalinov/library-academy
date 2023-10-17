@@ -8,6 +8,8 @@ import com.kodar.academy.Library.model.enums.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.stream.Collectors;
+
 public class UserMapper {
 
     private static final Logger logger = LoggerFactory.getLogger(UserMapper.class);
@@ -32,7 +34,7 @@ public class UserMapper {
         target.setLastName(source.getLastName());
         target.setDateOfBirth(source.getDateOfBirth());
         target.setHasProlongedRents(source.getHasProlongedRents());
-        target.setRents(source.getRents());
+        target.setRents(source.getRents().stream().map(RentMapper::mapToResponse).collect(Collectors.toSet()));
         return target;
     }
 

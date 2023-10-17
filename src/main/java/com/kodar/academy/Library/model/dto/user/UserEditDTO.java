@@ -1,5 +1,6 @@
 package com.kodar.academy.Library.model.dto.user;
 
+import com.kodar.academy.Library.model.constants.Constants;
 import com.kodar.academy.Library.model.validation.MatchingOldUsername;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -8,19 +9,19 @@ import jakarta.validation.constraints.Size;
 public class UserEditDTO {
 
     @MatchingOldUsername
-    @NotBlank(message = "Username is required")
-    @Size(min = 3, max = 32, message = "Username must be between 3 and 32 characters")
+    @NotBlank(message = Constants.USERNAME_REQUIRED)
+    @Size(min = 3, max = 32, message = Constants.USERNAME_LENGTH)
     private String username;
-    @NotBlank(message = "First name is required")
-    @Size(min = 1, max = 64, message = "First name must be between 1 and 64 characters")
-    @Pattern(regexp = "^[a-zA-Z]+$", message = "First name must contain only letters")
+    @NotBlank(message = Constants.FNAME_REQUIRED)
+    @Size(min = 1, max = 64, message = Constants.FNAME_LENGTH)
+    @Pattern(regexp = "^[a-zA-Z]+$", message = Constants.FNAME_LETTERS)
     private String firstName;
-    @NotBlank(message = "Last name is required")
-    @Size(min = 1, max = 64, message = "Last name must be between 1 and 64 characters")
-    @Pattern(regexp = "^[a-zA-Z]+$", message = "Last name must contain only letters")
+    @NotBlank(message = Constants.LNAME_REQUIRED)
+    @Size(min = 1, max = 64, message = Constants.LNAME_LENGTH)
+    @Pattern(regexp = "^[a-zA-Z]+$", message = Constants.LNAME_LETTERS)
     private String lastName;
-    @NotBlank(message = "Display name is required")
-    @Size(min = 3, max = 32, message = "Display name must be between 3 and 32 characters")
+    @NotBlank(message = Constants.DISPLAY_NAME_REQUIRED)
+    @Size(min = 3, max = 32, message = Constants.DISPLAY_NAME_LENGTH)
     private String displayName;
 
     public String getUsername() {
