@@ -1,5 +1,6 @@
 package com.kodar.academy.Library.model.validation;
 
+import com.kodar.academy.Library.model.constants.Constants;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -12,7 +13,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = MatchingOldUsernameValidator.class)
 public @interface MatchingOldUsername {
-    String message() default "Username already exists";
+    String message() default Constants.DUPLICATE_USERNAME;
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

@@ -6,7 +6,16 @@ import com.kodar.academy.Library.model.entity.Book;
 import com.kodar.academy.Library.model.entity.Rent;
 import com.kodar.academy.Library.model.entity.User;
 import com.kodar.academy.Library.model.enums.Role;
-import com.kodar.academy.Library.model.exceptions.*;
+import com.kodar.academy.Library.model.exceptions.BookAlreadyReturnedException;
+import com.kodar.academy.Library.model.exceptions.BookNotActiveException;
+import com.kodar.academy.Library.model.exceptions.BookNotFoundException;
+import com.kodar.academy.Library.model.exceptions.DuplicateRentException;
+import com.kodar.academy.Library.model.exceptions.InsufficientBookAvailableQuantityException;
+import com.kodar.academy.Library.model.exceptions.RentCapException;
+import com.kodar.academy.Library.model.exceptions.RentNotFoundException;
+import com.kodar.academy.Library.model.exceptions.UserNotEligibleToRentException;
+import com.kodar.academy.Library.model.exceptions.UserNotFoundException;
+import com.kodar.academy.Library.model.exceptions.UserProlongedRentsException;
 import com.kodar.academy.Library.model.mapper.RentMapper;
 import com.kodar.academy.Library.repository.BookRepository;
 import com.kodar.academy.Library.repository.RentRepository;
@@ -16,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -79,8 +89,10 @@ public class RentService {
                 }
             }
             else rentForUser = authUser;
-            if (authUser.getId() != rentForUser.getId() && !authUser.getRole().equals(Role.ADMIN)) {
-                throw new UserNotEligibleToRentException(authUser.getUsername(), rentForUser.getUsername());
+            if (authUser.getId() != rentForUser.getId()) {
+                if(!authentication.getAuthorities().contains(new SimpleGrantedAuthority(Role.ADMIN.toString()))) {
+                    throw new UserNotEligibleToRentException(authUser.getUsername(), rentForUser.getUsername());
+                }
             }
         }
         else rentForUser = authUser;
@@ -89,10 +101,10 @@ public class RentService {
         }
         int counter = 0;
         for(Rent r : rentForUser.getRents()) {
-            if(r.getBook().getId() == bookId && r.getReturnDate() == null) {
-                throw new DuplicateRentException();
-            }
             if(r.getReturnDate() == null) {
+                if(r.getBook().getId() == bookId) {
+                    throw new DuplicateRentException();
+                }
                 counter++;
             }
         }
@@ -112,6 +124,8 @@ public class RentService {
         rentRepository.save(rent);
         book.setAvailableQuantity(book.getAvailableQuantity() - 1);
         bookRepository.save(book);
+        rentForUser.getRents().add(rent);
+        userRepository.save(rentForUser);
         return RentMapper.mapToResponse(rent);
     }
 

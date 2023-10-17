@@ -38,4 +38,27 @@ public class Constants {
     public static final String SUCCESSFUL_BOOK_DELETE = "Book successfully deleted";
     public static final String SUCCESSFUL_USER_DELETE = "User successfully deleted";
     public static final String SUCCESSFUL_PASSWORD_CHANGE = "Password changed successfully";
+    //validation messages
+    public static final String TITLE_REQUIRED = "Title is required";
+    public static final String TITLE_LENGTH = "Title must be between 1 and 255 characters";
+    public static final String PUBLISHER_REQUIRED = "Publisher is required";
+    public static final String PUBLISHER_LENGTH = "Publisher must be between 2 and 64 characters";
+    public static final String TOTAL_QUANTITY_MIN_VALUE = "Total quantity can't be set to less than 0";
+    public static final String ISBN_REQUIRED = "ISBN is required";
+    public static final String FNAME_REQUIRED = "First name is required";
+    public static final String FNAME_LENGTH = "First name must be between 1 and 64 characters";
+    public static final String FNAME_LETTERS = "First name must contain only letters";
+    public static final String LNAME_REQUIRED = "Last name is required";
+    public static final String LNAME_LENGTH = "Last name must be between 1 and 64 characters";
+    public static final String LNAME_LETTERS = "Last name must contain only letters";
+    public static final String FUTURE_DATE_EXPECTED = "Future date expected";
+    public static final String PASSWORD_REQUIRED = "Password is required";
+    public static final String PASSWORD_LENGTH = "Password must be between 8 and 32 characters";
+    public static final String USERNAME_REQUIRED = "Username is required";
+    public static final String USERNAME_LENGTH = "Username must be between 3 and 32 characters";
+    public static final String DISPLAY_NAME_REQUIRED = "Display name is required";
+    public static final String DISPLAY_NAME_LENGTH = "Display name must be between 3 and 32 characters";
+    public static final String DUPLICATE_USERNAME = "Username already taken";
+    public static final String PAST_DATE_EXPECTED = "Past date expected";
+
 }

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AuthController {
 
-    UserService userService;
+    private final UserService userService;
 
     @Autowired
     public AuthController(UserService userService) {

@@ -127,6 +127,14 @@ public class CustomExceptionHandler {
         return message;
     }
 
+    @ExceptionHandler(UserNotEligibleToRentException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ErrorMessage userNotEligibleToRentException(UserNotEligibleToRentException ex) {
+        ErrorMessage message = buildExceptionResponse(ex);
+        message.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        return message;
+    }
+
     private ErrorMessage buildExceptionResponse(RuntimeException ex) {
         List<String> msgsList = new ArrayList<>();
         msgsList.add(ex.getMessage());

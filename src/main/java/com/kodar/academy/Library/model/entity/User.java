@@ -1,7 +1,15 @@
 package com.kodar.academy.Library.model.entity;
 
 import com.kodar.academy.Library.model.enums.Role;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -36,7 +44,7 @@ public class User {
     private Set<Rent> rents;
 
     public User() {
-
+        this.rents = new HashSet<>();
     }
 
     public User(String username, String firstName, String lastName, String displayName, String password,
