@@ -16,6 +16,10 @@ public class UserResponseDTO {
 
     private boolean hasProlongedRents;
 
+    private String subscriptionType;
+
+    private String balance;
+
     public String getUsername() {
         return username;
     }
@@ -62,5 +66,21 @@ public class UserResponseDTO {
 
     public void setHasProlongedRents(boolean hasProlongedRents) {
         this.hasProlongedRents = hasProlongedRents;
+    }
+
+    public String getSubscriptionType() {
+        return subscriptionType;
+    }
+
+    public void setSubscriptionType(String subscriptionType) {
+        this.subscriptionType = subscriptionType;
+    }
+
+    public String getBalance() {
+        return balance;
+    }
+
+    public void setBalance(String balance) {
+        this.balance = balance;
     }
 }

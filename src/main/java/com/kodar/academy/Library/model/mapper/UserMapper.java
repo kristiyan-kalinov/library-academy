@@ -22,6 +22,13 @@ public class UserMapper {
         target.setLastName(source.getLastName());
         target.setDateOfBirth(source.getDateOfBirth());
         target.setHasProlongedRents(source.getHasProlongedRents());
+        if(source.getSubscription() == null) {
+            target.setSubscriptionType(null);
+        }
+        else {
+            target.setSubscriptionType(source.getSubscription().getTier().toString());
+        }
+        target.setBalance(source.getBalance().toString());
         return target;
     }
 
@@ -35,6 +42,13 @@ public class UserMapper {
         target.setDateOfBirth(source.getDateOfBirth());
         target.setHasProlongedRents(source.getHasProlongedRents());
         target.setRents(source.getRents().stream().map(RentMapper::mapToResponse).collect(Collectors.toSet()));
+        if(source.getSubscription() == null) {
+            target.setSubscriptionType(null);
+        }
+        else {
+            target.setSubscriptionType(source.getSubscription().getTier().toString());
+        }
+        target.setBalance(source.getBalance().toString());
         return target;
     }
 

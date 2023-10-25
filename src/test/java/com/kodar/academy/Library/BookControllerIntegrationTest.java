@@ -667,14 +667,14 @@ public class BookControllerIntegrationTest extends BaseTest {
         Assertions.assertTrue(user.getRents().contains(savedRent));
         Assertions.assertEquals(LocalDate.now(), savedRent.getRentDate());
         Assertions.assertNull(savedRent.getReturnDate());
-        Assertions.assertEquals(LocalDate.now().plusMonths(1), savedRent.getExpectedReturnDate());
+        Assertions.assertEquals(LocalDate.now().plusDays(30), savedRent.getExpectedReturnDate());
         Assertions.assertEquals(oldQuantity - 1, book.getAvailableQuantity());
 
         Assertions.assertEquals(book.getTitle(), response.getBookTitle());
         Assertions.assertEquals(user.getUsername(), response.getRentedBy());
         Assertions.assertEquals(LocalDate.now(), response.getRentDate());
         Assertions.assertNull(response.getReturnDate());
-        Assertions.assertEquals(LocalDate.now().plusMonths(1), response.getExpectedReturnDate());
+        Assertions.assertEquals(LocalDate.now().plusDays(30), response.getExpectedReturnDate());
     }
 
     @Test
@@ -709,14 +709,122 @@ public class BookControllerIntegrationTest extends BaseTest {
         Assertions.assertTrue(rentUser.getRents().contains(savedRent));
         Assertions.assertEquals(LocalDate.now(), savedRent.getRentDate());
         Assertions.assertNull(savedRent.getReturnDate());
-        Assertions.assertEquals(LocalDate.now().plusMonths(1), savedRent.getExpectedReturnDate());
+        Assertions.assertEquals(LocalDate.now().plusDays(30), savedRent.getExpectedReturnDate());
         Assertions.assertEquals(oldQuantity - 1, book.getAvailableQuantity());
 
         Assertions.assertEquals(book.getTitle(), response.getBookTitle());
         Assertions.assertEquals(rentUser.getUsername(), response.getRentedBy());
         Assertions.assertEquals(LocalDate.now(), response.getRentDate());
         Assertions.assertNull(response.getReturnDate());
-        Assertions.assertEquals(LocalDate.now().plusMonths(1), response.getExpectedReturnDate());
+        Assertions.assertEquals(LocalDate.now().plusDays(30), response.getExpectedReturnDate());
+    }
+
+    @Test
+    @Transactional
+    void rentBook_AsBronzeUser_Success() throws Exception {
+        User user = genBronzeUser();
+        Book book = genBook(1);
+        int oldQuantity = book.getAvailableQuantity();
+
+        MockHttpServletResponse result = this.mockMvc.perform(post("/books/rent/" + book.getId())
+                        .with(user(user.getUsername()).authorities(new SimpleGrantedAuthority(Role.USER.toString()))))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andReturn().getResponse();
+
+        RentResponseDTO response = objectMapper.readValue(result.getContentAsString(), new TypeReference<>() {
+        });
+        Rent savedRent = rentRepository.findByBookIdAndUserId(book.getId(), user.getId()).orElse(null);
+
+        Assertions.assertNotNull(savedRent);
+        Assertions.assertNotNull(response);
+
+        Assertions.assertEquals(book, savedRent.getBook());
+        Assertions.assertEquals(user, savedRent.getUser());
+        Assertions.assertEquals(book.getId(), savedRent.getBook().getId());
+        Assertions.assertEquals(user.getId(), savedRent.getUser().getId());
+        Assertions.assertTrue(user.getRents().contains(savedRent));
+        Assertions.assertEquals(LocalDate.now(), savedRent.getRentDate());
+        Assertions.assertNull(savedRent.getReturnDate());
+        Assertions.assertEquals(LocalDate.now().plusDays(30), savedRent.getExpectedReturnDate());
+        Assertions.assertEquals(oldQuantity - 1, book.getAvailableQuantity());
+
+        Assertions.assertEquals(book.getTitle(), response.getBookTitle());
+        Assertions.assertEquals(user.getUsername(), response.getRentedBy());
+        Assertions.assertEquals(LocalDate.now(), response.getRentDate());
+        Assertions.assertNull(response.getReturnDate());
+        Assertions.assertEquals(LocalDate.now().plusDays(30), response.getExpectedReturnDate());
+    }
+
+    @Test
+    @Transactional
+    void rentBook_AsSilverUser_Success() throws Exception {
+        User user = genSilverUser();
+        Book book = genBook(1);
+        int oldQuantity = book.getAvailableQuantity();
+
+        MockHttpServletResponse result = this.mockMvc.perform(post("/books/rent/" + book.getId())
+                        .with(user(user.getUsername()).authorities(new SimpleGrantedAuthority(Role.USER.toString()))))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andReturn().getResponse();
+
+        RentResponseDTO response = objectMapper.readValue(result.getContentAsString(), new TypeReference<>() {
+        });
+        Rent savedRent = rentRepository.findByBookIdAndUserId(book.getId(), user.getId()).orElse(null);
+
+        Assertions.assertNotNull(savedRent);
+        Assertions.assertNotNull(response);
+
+        Assertions.assertEquals(book, savedRent.getBook());
+        Assertions.assertEquals(user, savedRent.getUser());
+        Assertions.assertEquals(book.getId(), savedRent.getBook().getId());
+        Assertions.assertEquals(user.getId(), savedRent.getUser().getId());
+        Assertions.assertTrue(user.getRents().contains(savedRent));
+        Assertions.assertEquals(LocalDate.now(), savedRent.getRentDate());
+        Assertions.assertNull(savedRent.getReturnDate());
+        Assertions.assertEquals(LocalDate.now().plusDays(45), savedRent.getExpectedReturnDate());
+        Assertions.assertEquals(oldQuantity - 1, book.getAvailableQuantity());
+
+        Assertions.assertEquals(book.getTitle(), response.getBookTitle());
+        Assertions.assertEquals(user.getUsername(), response.getRentedBy());
+        Assertions.assertEquals(LocalDate.now(), response.getRentDate());
+        Assertions.assertNull(response.getReturnDate());
+        Assertions.assertEquals(LocalDate.now().plusDays(45), response.getExpectedReturnDate());
+    }
+
+    @Test
+    @Transactional
+    void rentBook_AsGoldUser_Success() throws Exception {
+        User user = genGoldUser();
+        Book book = genBook(1);
+        int oldQuantity = book.getAvailableQuantity();
+
+        MockHttpServletResponse result = this.mockMvc.perform(post("/books/rent/" + book.getId())
+                        .with(user(user.getUsername()).authorities(new SimpleGrantedAuthority(Role.USER.toString()))))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andReturn().getResponse();
+
+        RentResponseDTO response = objectMapper.readValue(result.getContentAsString(), new TypeReference<>() {
+        });
+        Rent savedRent = rentRepository.findByBookIdAndUserId(book.getId(), user.getId()).orElse(null);
+
+        Assertions.assertNotNull(savedRent);
+        Assertions.assertNotNull(response);
+
+        Assertions.assertEquals(book, savedRent.getBook());
+        Assertions.assertEquals(user, savedRent.getUser());
+        Assertions.assertEquals(book.getId(), savedRent.getBook().getId());
+        Assertions.assertEquals(user.getId(), savedRent.getUser().getId());
+        Assertions.assertTrue(user.getRents().contains(savedRent));
+        Assertions.assertEquals(LocalDate.now(), savedRent.getRentDate());
+        Assertions.assertNull(savedRent.getReturnDate());
+        Assertions.assertEquals(LocalDate.now().plusDays(60), savedRent.getExpectedReturnDate());
+        Assertions.assertEquals(oldQuantity - 1, book.getAvailableQuantity());
+
+        Assertions.assertEquals(book.getTitle(), response.getBookTitle());
+        Assertions.assertEquals(user.getUsername(), response.getRentedBy());
+        Assertions.assertEquals(LocalDate.now(), response.getRentDate());
+        Assertions.assertNull(response.getReturnDate());
+        Assertions.assertEquals(LocalDate.now().plusDays(60), response.getExpectedReturnDate());
     }
 
     @Test
@@ -729,29 +837,6 @@ public class BookControllerIntegrationTest extends BaseTest {
                         .with(user(user.getUsername()).authorities(new SimpleGrantedAuthority("TEST"))))
                 .andExpect(MockMvcResultMatchers.status().isForbidden())
                 .andReturn().getResponse();
-    }
-
-    @Test
-    @Transactional
-    void rentBook_ValidationException() throws Exception {
-        User user = genRentUser();
-        Book book = genBook(1);
-        RentCreateDTO rentCreateDTO = new RentCreateDTO();
-        rentCreateDTO.setExpectedReturnDate(LocalDate.now().minusMonths(1));
-
-        MockHttpServletResponse result = this.mockMvc.perform(post("/books/rent/" + book.getId())
-                        .with(user(user.getUsername()).authorities(new SimpleGrantedAuthority(Role.USER.toString())))
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(rentCreateDTO))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andReturn().getResponse();
-
-        ErrorMessage response = objectMapper.readValue(result.getContentAsString(), new TypeReference<>() {
-        });
-
-        Assertions.assertNotNull(response);
-        Assertions.assertEquals(Constants.FUTURE_DATE_EXPECTED, response.getMessages().get(0));
     }
 
     @Test

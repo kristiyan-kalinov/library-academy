@@ -6,14 +6,17 @@ import com.kodar.academy.Library.model.entity.Author;
 import com.kodar.academy.Library.model.entity.Book;
 import com.kodar.academy.Library.model.entity.Genre;
 import com.kodar.academy.Library.model.entity.Rent;
+import com.kodar.academy.Library.model.entity.Subscription;
 import com.kodar.academy.Library.model.entity.User;
 import com.kodar.academy.Library.model.enums.Deactivation;
 import com.kodar.academy.Library.model.enums.Role;
+import com.kodar.academy.Library.model.enums.SubscriptionType;
 import com.kodar.academy.Library.model.mapper.AuthorMapper;
 import com.kodar.academy.Library.model.mapper.GenreMapper;
 import com.kodar.academy.Library.repository.BookRepository;
 import com.kodar.academy.Library.repository.GenreRepository;
 import com.kodar.academy.Library.repository.RentRepository;
+import com.kodar.academy.Library.repository.SubscriptionRepository;
 import com.kodar.academy.Library.repository.UserRepository;
 import com.kodar.academy.Library.service.AuthorService;
 import com.kodar.academy.Library.service.BookService;
@@ -42,6 +45,8 @@ public class BaseTest {
     PasswordEncoder passwordEncoder;
     @Autowired
     protected RentRepository rentRepository;
+    @Autowired
+    protected SubscriptionRepository subscriptionRepository;
 
     protected Author genAuthor1(){
         AuthorDTO author = new AuthorDTO();
@@ -139,6 +144,7 @@ public class BaseTest {
         user.setDisplayName("arsen");
         user.setPassword(passwordEncoder.encode("test1234"));
         user.setRole(Role.ADMIN);
+        user.setSubscription(subscriptionRepository.findById(1).orElse(null));
         return userRepository.save(user);
     }
 
@@ -150,6 +156,7 @@ public class BaseTest {
         user.setDisplayName("arsen");
         user.setPassword(passwordEncoder.encode("test1234"));
         user.setRole(Role.USER);
+        user.setSubscription(subscriptionRepository.findById(1).orElse(null));
         return userRepository.save(user);
     }
 
@@ -161,6 +168,7 @@ public class BaseTest {
         user.setDisplayName("ivan");
         user.setPassword(passwordEncoder.encode("test1234"));
         user.setRole(Role.USER);
+        user.setSubscription(subscriptionRepository.findById(1).orElse(null));
         return userRepository.save(user);
     }
 
@@ -172,6 +180,43 @@ public class BaseTest {
         user.setDisplayName("ali");
         user.setPassword(passwordEncoder.encode("test1234"));
         user.setRole(Role.USER);
+        user.setSubscription(subscriptionRepository.findById(1).orElse(null));
+        return userRepository.save(user);
+    }
+
+    protected User genBronzeUser() {
+        User user = new User();
+        user.setFirstName("ali");
+        user.setLastName("sali");
+        user.setUsername("ali");
+        user.setDisplayName("ali");
+        user.setPassword(passwordEncoder.encode("test1234"));
+        user.setRole(Role.USER);
+        user.setSubscription(subscriptionRepository.findById(1).orElse(null));
+        return userRepository.save(user);
+    }
+
+    protected User genSilverUser() {
+        User user = new User();
+        user.setFirstName("ali");
+        user.setLastName("sali");
+        user.setUsername("ali");
+        user.setDisplayName("ali");
+        user.setPassword(passwordEncoder.encode("test1234"));
+        user.setRole(Role.USER);
+        user.setSubscription(subscriptionRepository.findById(2).orElse(null));
+        return userRepository.save(user);
+    }
+
+    protected User genGoldUser() {
+        User user = new User();
+        user.setFirstName("ali");
+        user.setLastName("sali");
+        user.setUsername("ali");
+        user.setDisplayName("ali");
+        user.setPassword(passwordEncoder.encode("test1234"));
+        user.setRole(Role.USER);
+        user.setSubscription(subscriptionRepository.findById(3).orElse(null));
         return userRepository.save(user);
     }
 

@@ -1,10 +1,12 @@
 package com.kodar.academy.Library.controller;
 
 import com.kodar.academy.Library.model.constants.Constants;
+import com.kodar.academy.Library.model.dto.user.UserBalanceDTO;
 import com.kodar.academy.Library.model.dto.user.UserCPDTO;
 import com.kodar.academy.Library.model.dto.user.UserEditDTO;
 import com.kodar.academy.Library.model.dto.user.UserExtendedResponseDTO;
 import com.kodar.academy.Library.model.dto.user.UserResponseDTO;
+import com.kodar.academy.Library.model.dto.user.UserSubscriptionDTO;
 import com.kodar.academy.Library.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +62,27 @@ public class UserController {
     public ResponseEntity<String> changePassword(@PathVariable("id") int id, @Valid @RequestBody UserCPDTO userCPDTO) {
         userService.changePassword(id, userCPDTO);
         return new ResponseEntity<>(Constants.SUCCESSFUL_PASSWORD_CHANGE, HttpStatus.OK);
+    }
+
+    @PutMapping("/users/subscribe/{id}")
+    @PreAuthorize("@userService.checkAuth(#id) == authentication.name")
+    public ResponseEntity<String> subscribe(@PathVariable("id") int id, @Valid @RequestBody UserSubscriptionDTO userSubscriptionDTO) {
+        userService.subscribe(id, userSubscriptionDTO);
+        return new ResponseEntity<>(Constants.SUCCESSFUL_SUBSCRIPTION, HttpStatus.OK);
+    }
+
+    @PutMapping("/users/unsubscribe/{id}")
+    @PreAuthorize("@userService.checkAuth(#id) == authentication.name")
+    public ResponseEntity<String> unsubscribe(@PathVariable("id") int id) {
+        userService.unsubscribe(id);
+        return new ResponseEntity<>(Constants.SUCCESSFUL_UNSUBSCRIBE, HttpStatus.OK);
+    }
+
+    @PutMapping("/users/add-balance/{id}")
+    @PreAuthorize("@userService.checkAuth(#id) == authentication.name")
+    public ResponseEntity<String> addBalance(@PathVariable("id") int id, @Valid @RequestBody UserBalanceDTO userBalanceDTO) {
+        userService.addBalance(id, userBalanceDTO);
+        return new ResponseEntity<>(String.format(Constants.ADD_BALANCE, id, userBalanceDTO.getBalance()), HttpStatus.OK);
     }
 
 }

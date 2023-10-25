@@ -8,9 +8,12 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -42,22 +45,16 @@ public class User {
     private boolean hasProlongedRents;
     @OneToMany(mappedBy = "user")
     private Set<Rent> rents;
+    @Column(name = "balance")
+    private BigDecimal balance;
+    @ManyToOne
+    @JoinColumn(name = "subscription_id")
+    private Subscription subscription;
+    @Column(name = "cancelled_subscription")
+    private boolean cancelledSubscription;
 
     public User() {
         this.rents = new HashSet<>();
-    }
-
-    public User(String username, String firstName, String lastName, String displayName, String password,
-                LocalDate dateOfBirth, Role role, boolean hasProlongedRents, Set<Rent> rents) {
-        this.username = username;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.displayName = displayName;
-        this.password = password;
-        this.dateOfBirth = dateOfBirth;
-        this.role = role;
-        this.hasProlongedRents = hasProlongedRents;
-        this.rents = rents;
     }
 
     public int getId() {
@@ -134,6 +131,30 @@ public class User {
 
     public Set<Rent> getRents() {
         return rents;
+    }
+
+    public BigDecimal getBalance() {
+        return balance;
+    }
+
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
+
+    public Subscription getSubscription() {
+        return subscription;
+    }
+
+    public void setSubscription(Subscription subscription) {
+        this.subscription = subscription;
+    }
+
+    public boolean getCancelledSubscription() {
+        return cancelledSubscription;
+    }
+
+    public void setCancelledSubscription(boolean cancelledSubscription) {
+        this.cancelledSubscription = cancelledSubscription;
     }
 
     public void setRents(Set<Rent> rents) {

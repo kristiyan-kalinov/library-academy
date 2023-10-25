@@ -34,10 +34,17 @@ public class Constants {
     public static final String USER_PROLONGED_RENTS = "User: %s has prolonged rents";
     public static final String DUPLICATE_RENT = "Can't rent the same book twice";
     public static final String RENT_CAP_MSG = "User: %s reached max amount of rented books at once";
+    public static final String NO_SUBSCRIPTION = "User with id %d has no subscription";
+    public static final String INSUFFICIENT_BALANCE = "User with id %d has insufficient balance to subscribe";
+    public static final String SAME_SUBSCRIPTION = "Already subscribed with that plan";
+    public static final String CAP_DOWNGRADE_EXCEPTION_MSG = "Can't downgrade plan to %s because you have more than %d rented books";
     //controller messages
     public static final String SUCCESSFUL_BOOK_DELETE = "Book successfully deleted";
     public static final String SUCCESSFUL_USER_DELETE = "User successfully deleted";
     public static final String SUCCESSFUL_PASSWORD_CHANGE = "Password changed successfully";
+    public static final String SUCCESSFUL_SUBSCRIPTION = "User successfully subscribed";
+    public static final String SUCCESSFUL_UNSUBSCRIBE = "User successfully unsubscribed";
+    public static final String ADD_BALANCE = "User with id: %d added %f balance";
     //validation messages
     public static final String TITLE_REQUIRED = "Title is required";
     public static final String TITLE_LENGTH = "Title must be between 1 and 255 characters";
@@ -51,7 +58,6 @@ public class Constants {
     public static final String LNAME_REQUIRED = "Last name is required";
     public static final String LNAME_LENGTH = "Last name must be between 1 and 64 characters";
     public static final String LNAME_LETTERS = "Last name must contain only letters";
-    public static final String FUTURE_DATE_EXPECTED = "Future date expected";
     public static final String PASSWORD_REQUIRED = "Password is required";
     public static final String PASSWORD_LENGTH = "Password must be between 8 and 32 characters";
     public static final String USERNAME_REQUIRED = "Username is required";
@@ -60,5 +66,6 @@ public class Constants {
     public static final String DISPLAY_NAME_LENGTH = "Display name must be between 3 and 32 characters";
     public static final String DUPLICATE_USERNAME = "Username already taken";
     public static final String PAST_DATE_EXPECTED = "Past date expected";
+    public static final String MIN_BALANCE = "Can't add less than 1 euro";
 
 }
