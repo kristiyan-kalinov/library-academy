@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 public class AuthorController {
 
-    AuthorService authorService;
+    private final AuthorService authorService;
 
     @Autowired
     public AuthorController(AuthorService authorService) {

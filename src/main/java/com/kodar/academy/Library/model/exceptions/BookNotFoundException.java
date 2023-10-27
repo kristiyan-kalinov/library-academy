@@ -8,5 +8,4 @@ public class BookNotFoundException extends RuntimeException{
         super(String.format(Constants.BOOK_NOT_FOUND, id));
     }
 
-
 }

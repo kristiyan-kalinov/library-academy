@@ -6,7 +6,19 @@ import com.kodar.academy.Library.model.entity.Book;
 import com.kodar.academy.Library.model.entity.Rent;
 import com.kodar.academy.Library.model.entity.User;
 import com.kodar.academy.Library.model.enums.Role;
-import com.kodar.academy.Library.model.exceptions.*;
+import com.kodar.academy.Library.model.enums.SubscriptionType;
+import com.kodar.academy.Library.model.exceptions.BookAlreadyReturnedException;
+import com.kodar.academy.Library.model.exceptions.BookNotActiveException;
+import com.kodar.academy.Library.model.exceptions.BookNotFoundException;
+import com.kodar.academy.Library.model.exceptions.DuplicateRentException;
+import com.kodar.academy.Library.model.exceptions.InsufficientBalanceException;
+import com.kodar.academy.Library.model.exceptions.InsufficientBookAvailableQuantityException;
+import com.kodar.academy.Library.model.exceptions.NoSubscriptionException;
+import com.kodar.academy.Library.model.exceptions.RentCapException;
+import com.kodar.academy.Library.model.exceptions.RentNotFoundException;
+import com.kodar.academy.Library.model.exceptions.UserNotEligibleToRentException;
+import com.kodar.academy.Library.model.exceptions.UserNotFoundException;
+import com.kodar.academy.Library.model.exceptions.UserProlongedRentsException;
 import com.kodar.academy.Library.model.mapper.RentMapper;
 import com.kodar.academy.Library.repository.BookRepository;
 import com.kodar.academy.Library.repository.RentRepository;
@@ -16,9 +28,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -79,39 +93,49 @@ public class RentService {
                 }
             }
             else rentForUser = authUser;
-            if (authUser.getId() != rentForUser.getId() && !authUser.getRole().equals(Role.ADMIN)) {
-                throw new UserNotEligibleToRentException(authUser.getUsername(), rentForUser.getUsername());
+            if (authUser.getId() != rentForUser.getId()) {
+                if(!authentication.getAuthorities().contains(new SimpleGrantedAuthority(Role.ADMIN.toString()))) {
+                    throw new UserNotEligibleToRentException(authUser.getUsername(), rentForUser.getUsername());
+                }
             }
         }
         else rentForUser = authUser;
+        if(rentForUser.getSubscription() == null) {
+            throw new NoSubscriptionException(rentForUser.getId());
+        }
         if(rentForUser.getHasProlongedRents()) {
             throw new UserProlongedRentsException(rentForUser.getUsername());
         }
         int counter = 0;
         for(Rent r : rentForUser.getRents()) {
-            if(r.getBook().getId() == bookId && r.getReturnDate() == null) {
-                throw new DuplicateRentException();
-            }
             if(r.getReturnDate() == null) {
+                if(r.getBook().getId() == bookId) {
+                    throw new DuplicateRentException();
+                }
                 counter++;
             }
         }
-        if(counter > 2) {
+        if(counter >= rentForUser.getSubscription().getMaxRentBooks()) {
             throw new RentCapException(rentForUser.getUsername());
         }
         Rent rent = new Rent();
         rent.setRentDate(LocalDate.now());
-        if(rentCreateDTO == null || rentCreateDTO.getExpectedReturnDate() == null) {
-            rent.setExpectedReturnDate(LocalDate.now().plusMonths(1));
+        if(rentForUser.getSubscription().getTier() == SubscriptionType.BRONZE) {
+            rent.setExpectedReturnDate(LocalDate.now().plusDays(rentForUser.getSubscription().getMaxRentDays()));
         }
-        else {
-            rent.setExpectedReturnDate(rentCreateDTO.getExpectedReturnDate());
+        else if(rentForUser.getSubscription().getTier() == SubscriptionType.SILVER) {
+            rent.setExpectedReturnDate(LocalDate.now().plusDays(rentForUser.getSubscription().getMaxRentDays()));
+        }
+        else if(rentForUser.getSubscription().getTier() == SubscriptionType.GOLD) {
+            rent.setExpectedReturnDate(LocalDate.now().plusDays(rentForUser.getSubscription().getMaxRentDays()));
         }
         rent.setBook(book);
         rent.setUser(rentForUser);
         rentRepository.save(rent);
         book.setAvailableQuantity(book.getAvailableQuantity() - 1);
         bookRepository.save(book);
+        rentForUser.getRents().add(rent);
+        userRepository.save(rentForUser);
         return RentMapper.mapToResponse(rent);
     }
 
@@ -129,6 +153,9 @@ public class RentService {
             book.setAvailableQuantity(book.getAvailableQuantity() + 1);
             bookRepository.save(book);
             User user = userRepository.findById(rent.getUser().getId()).orElseThrow();
+            if(user.getBalance().compareTo(BigDecimal.valueOf(0)) < 0) {
+                throw new InsufficientBalanceException(user.getId());
+            }
             boolean hasProlonged = false;
             if(user.getHasProlongedRents()) {
                 for(Rent r : user.getRents()) {

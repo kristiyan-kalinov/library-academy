@@ -127,6 +127,38 @@ public class CustomExceptionHandler {
         return message;
     }
 
+    @ExceptionHandler(UserNotEligibleToRentException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ErrorMessage userNotEligibleToRentException(UserNotEligibleToRentException ex) {
+        ErrorMessage message = buildExceptionResponse(ex);
+        message.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        return message;
+    }
+
+    @ExceptionHandler(NoSubscriptionException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ErrorMessage noSubscriptionException(NoSubscriptionException ex) {
+        ErrorMessage message = buildExceptionResponse(ex);
+        message.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        return message;
+    }
+
+    @ExceptionHandler(InsufficientBalanceException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ErrorMessage insufficientBalanceException(InsufficientBalanceException ex) {
+        ErrorMessage message = buildExceptionResponse(ex);
+        message.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        return message;
+    }
+
+    @ExceptionHandler(DowngradeCapException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ErrorMessage downgradeCapException(DowngradeCapException ex) {
+        ErrorMessage message = buildExceptionResponse(ex);
+        message.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        return message;
+    }
+
     private ErrorMessage buildExceptionResponse(RuntimeException ex) {
         List<String> msgsList = new ArrayList<>();
         msgsList.add(ex.getMessage());

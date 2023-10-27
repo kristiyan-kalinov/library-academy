@@ -1,7 +1,11 @@
 package com.kodar.academy.Library.controller;
 
 import com.kodar.academy.Library.model.constants.Constants;
-import com.kodar.academy.Library.model.dto.book.*;
+import com.kodar.academy.Library.model.dto.book.BookChangeStatusDTO;
+import com.kodar.academy.Library.model.dto.book.BookCreateDTO;
+import com.kodar.academy.Library.model.dto.book.BookEditRequestDTO;
+import com.kodar.academy.Library.model.dto.book.BookFilterRequest;
+import com.kodar.academy.Library.model.dto.book.BookResponseDTO;
 import com.kodar.academy.Library.model.dto.rent.RentCreateDTO;
 import com.kodar.academy.Library.model.dto.rent.RentResponseDTO;
 import com.kodar.academy.Library.service.BookService;
@@ -12,15 +16,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
 public class BookController {
 
-    BookService bookService;
-    RentService rentService;
+    private final BookService bookService;
+    private final RentService rentService;
 
     @Autowired
     public BookController(BookService bookService, RentService rentService) {
@@ -70,7 +80,7 @@ public class BookController {
     @PostMapping("/books/rent/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<RentResponseDTO> rentBook(@PathVariable("id") int id,
-                                                    @Valid @RequestBody @Nullable RentCreateDTO rentCreateDTO) {
+                                                    @RequestBody @Nullable RentCreateDTO rentCreateDTO) {
         return new ResponseEntity<>(rentService.createRent(id, rentCreateDTO), HttpStatus.CREATED);
     }
 

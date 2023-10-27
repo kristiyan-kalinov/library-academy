@@ -6,8 +6,8 @@ import java.util.List;
 public class ErrorMessage {
 
     private int statusCode;
-    private LocalDateTime timestamp;
-    private List<String> messages;
+    private final LocalDateTime timestamp;
+    private final List<String> messages;
 
     public ErrorMessage(LocalDateTime timestamp, List<String> messages) {
         this.timestamp = timestamp;
