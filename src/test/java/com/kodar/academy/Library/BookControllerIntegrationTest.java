@@ -33,6 +33,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -1033,7 +1034,6 @@ public class BookControllerIntegrationTest extends BaseTest {
         User user = genUser();
         User user1 = genRentUser();
         Book book = genBook(1);
-        int oldQuantity = book.getAvailableQuantity();
         Rent rent = genRent(user, book);
 
         MockHttpServletResponse result = this.mockMvc.perform(put("/rents/return/" + rent.getId())
@@ -1047,7 +1047,6 @@ public class BookControllerIntegrationTest extends BaseTest {
     void returnBook_BookAlreadyReturnedException() throws Exception {
         User user = genUser();
         Book book = genBook(1);
-        int oldQuantity = book.getAvailableQuantity();
         Rent rent = genRent(user, book);
         rent.setReturnDate(LocalDate.now().plusDays(3));
 
@@ -1061,5 +1060,26 @@ public class BookControllerIntegrationTest extends BaseTest {
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(Constants.BOOK_ALREADY_RETURNED, response.getMessages().get(0));
+    }
+
+    @Test
+    @Transactional
+    void returnBook_InsufficientBalanceException() throws Exception {
+        User user = genUser();
+        user.setBalance(BigDecimal.valueOf(-10));
+        Book book = genBook(1);
+        Rent rent = genRent(user, book);
+
+        MockHttpServletResponse result = this.mockMvc.perform(put("/rents/return/" + rent.getId())
+                        .with(user(user.getUsername()).authorities(new SimpleGrantedAuthority(Role.USER.toString()))))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andReturn().getResponse();
+
+        ErrorMessage response = objectMapper.readValue(result.getContentAsString(), new TypeReference<>() {
+        });
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(String.format(Constants.INSUFFICIENT_BALANCE, user.getId()),
+                response.getMessages().get(0));
     }
 }

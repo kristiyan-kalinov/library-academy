@@ -35,7 +35,7 @@ public class Constants {
     public static final String DUPLICATE_RENT = "Can't rent the same book twice";
     public static final String RENT_CAP_MSG = "User: %s reached max amount of rented books at once";
     public static final String NO_SUBSCRIPTION = "User with id %d has no subscription";
-    public static final String INSUFFICIENT_BALANCE = "User with id %d has insufficient balance to subscribe";
+    public static final String INSUFFICIENT_BALANCE = "User with id %d has insufficient balance";
     public static final String CAP_DOWNGRADE_EXCEPTION_MSG = "Can't downgrade plan to %s because you have more than %d rented books";
     //controller messages
     public static final String SUCCESSFUL_BOOK_DELETE = "Book successfully deleted";

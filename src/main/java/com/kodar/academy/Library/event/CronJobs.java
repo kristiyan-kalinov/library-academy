@@ -15,20 +15,17 @@ public class CronJobs {
         this.userService = userService;
     }
 
-    //@Scheduled(cron = "0 0 3 1 * ?")
-    @Scheduled(cron = "30 46 17 * * ?")
+    @Scheduled(cron = "0 0 3 1 * ?")
     private void checkSubscriptions() {
         userService.checkSubscriptions();
     }
 
-    //@Scheduled(cron = "0 0 3 * * ?")
-    @Scheduled(cron = "0 49 17 * * ?")
+    @Scheduled(cron = "0 45 2 * * ?")
     private void tax() {
         userService.tax();
     }
 
-    //@Scheduled(cron = "0 30 2 * * ?")
-    @Scheduled(cron = "0 46 17 * * ?")
+    @Scheduled(cron = "0 30 2 * * ?")
     private void checkProlongedBooks() {
         userService.checkHasProlonged();
     }

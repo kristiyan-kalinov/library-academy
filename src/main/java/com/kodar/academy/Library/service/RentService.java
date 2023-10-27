@@ -11,6 +11,7 @@ import com.kodar.academy.Library.model.exceptions.BookAlreadyReturnedException;
 import com.kodar.academy.Library.model.exceptions.BookNotActiveException;
 import com.kodar.academy.Library.model.exceptions.BookNotFoundException;
 import com.kodar.academy.Library.model.exceptions.DuplicateRentException;
+import com.kodar.academy.Library.model.exceptions.InsufficientBalanceException;
 import com.kodar.academy.Library.model.exceptions.InsufficientBookAvailableQuantityException;
 import com.kodar.academy.Library.model.exceptions.NoSubscriptionException;
 import com.kodar.academy.Library.model.exceptions.RentCapException;
@@ -31,6 +32,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -151,6 +153,9 @@ public class RentService {
             book.setAvailableQuantity(book.getAvailableQuantity() + 1);
             bookRepository.save(book);
             User user = userRepository.findById(rent.getUser().getId()).orElseThrow();
+            if(user.getBalance().compareTo(BigDecimal.valueOf(0)) < 0) {
+                throw new InsufficientBalanceException(user.getId());
+            }
             boolean hasProlonged = false;
             if(user.getHasProlongedRents()) {
                 for(Rent r : user.getRents()) {
