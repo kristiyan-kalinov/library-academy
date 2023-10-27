@@ -223,16 +223,9 @@ public class UserService {
     @Transactional
     public void checkHasProlonged() {
         logger.info("checkHasProlonged called");
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findAllProlonged();
         for(User u : users) {
-            boolean flag = false;
-            for(Rent r : u.getRents()) {
-                if(r.getReturnDate() == null && r.getExpectedReturnDate().isBefore(LocalDate.now())) {
-                    flag = true;
-                    break;
-                }
-            }
-            u.setHasProlongedRents(flag);
+            u.setHasProlongedRents(true);
         }
     }
 
