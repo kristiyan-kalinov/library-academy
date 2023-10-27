@@ -6,7 +6,7 @@ import jakarta.validation.ConstraintValidatorContext;
 
 public class MatchingOldUsernameValidator implements ConstraintValidator<MatchingOldUsername, String> {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public MatchingOldUsernameValidator(UserRepository userRepository) {
         this.userRepository = userRepository;

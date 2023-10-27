@@ -1,7 +1,6 @@
 package com.kodar.academy.Library.model.dto.user;
 
 import com.kodar.academy.Library.model.dto.rent.RentResponseDTO;
-import com.kodar.academy.Library.model.entity.Rent;
 
 import java.util.Set;
 

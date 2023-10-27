@@ -2,10 +2,10 @@ package com.kodar.academy.Library.model.eventlistener;
 
 public class BookBaseEvent {
 
-    private String actionPerformed;
-    private int bookId;
-    private String oldValue;
-    private String newValue;
+    private final String actionPerformed;
+    private final int bookId;
+    private final String oldValue;
+    private final String newValue;
 
     public BookBaseEvent(String actionPerformed, int bookId,
                          String oldValue, String newValue) {

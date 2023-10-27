@@ -945,7 +945,7 @@ public class BookControllerIntegrationTest extends BaseTest {
     @Test
     @Transactional
     void rentBook_UserProlongedRentsException() throws Exception {
-        User user = genUser();
+        User user = genGoldUser();
         user.setHasProlongedRents(true);
         Book book = genBook(1);
 

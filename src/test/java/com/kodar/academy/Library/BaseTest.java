@@ -10,7 +10,6 @@ import com.kodar.academy.Library.model.entity.Subscription;
 import com.kodar.academy.Library.model.entity.User;
 import com.kodar.academy.Library.model.enums.Deactivation;
 import com.kodar.academy.Library.model.enums.Role;
-import com.kodar.academy.Library.model.enums.SubscriptionType;
 import com.kodar.academy.Library.model.mapper.AuthorMapper;
 import com.kodar.academy.Library.model.mapper.GenreMapper;
 import com.kodar.academy.Library.repository.BookRepository;
@@ -19,10 +18,12 @@ import com.kodar.academy.Library.repository.RentRepository;
 import com.kodar.academy.Library.repository.SubscriptionRepository;
 import com.kodar.academy.Library.repository.UserRepository;
 import com.kodar.academy.Library.service.AuthorService;
-import com.kodar.academy.Library.service.BookService;
+import com.kodar.academy.Library.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -40,13 +41,13 @@ public class BaseTest {
     @Autowired
     protected UserRepository userRepository;
     @Autowired
-    BookService bookService;
-    @Autowired
     PasswordEncoder passwordEncoder;
     @Autowired
     protected RentRepository rentRepository;
     @Autowired
     protected SubscriptionRepository subscriptionRepository;
+    @Autowired
+    protected UserService userService;
 
     protected Author genAuthor1(){
         AuthorDTO author = new AuthorDTO();
@@ -140,11 +141,12 @@ public class BaseTest {
         User user = new User();
         user.setFirstName("arsen");
         user.setLastName("arsenov");
-        user.setUsername("arsen");
+        user.setUsername("arsensata");
         user.setDisplayName("arsen");
         user.setPassword(passwordEncoder.encode("test1234"));
         user.setRole(Role.ADMIN);
         user.setSubscription(subscriptionRepository.findById(1).orElse(null));
+        user.setBalance(BigDecimal.valueOf(50));
         return userRepository.save(user);
     }
 
@@ -156,19 +158,8 @@ public class BaseTest {
         user.setDisplayName("arsen");
         user.setPassword(passwordEncoder.encode("test1234"));
         user.setRole(Role.USER);
-        user.setSubscription(subscriptionRepository.findById(1).orElse(null));
-        return userRepository.save(user);
-    }
-
-    protected User genUser1() {
-        User user = new User();
-        user.setFirstName("ivan");
-        user.setLastName("ivanov");
-        user.setUsername("ivan");
-        user.setDisplayName("ivan");
-        user.setPassword(passwordEncoder.encode("test1234"));
-        user.setRole(Role.USER);
-        user.setSubscription(subscriptionRepository.findById(1).orElse(null));
+        user.setSubscription(null);
+        user.setBalance(BigDecimal.valueOf(50));
         return userRepository.save(user);
     }
 
@@ -176,11 +167,12 @@ public class BaseTest {
         User user = new User();
         user.setFirstName("ali");
         user.setLastName("sali");
-        user.setUsername("ali");
+        user.setUsername("ali0");
         user.setDisplayName("ali");
         user.setPassword(passwordEncoder.encode("test1234"));
         user.setRole(Role.USER);
         user.setSubscription(subscriptionRepository.findById(1).orElse(null));
+        user.setBalance(BigDecimal.valueOf(50));
         return userRepository.save(user);
     }
 
@@ -188,11 +180,12 @@ public class BaseTest {
         User user = new User();
         user.setFirstName("ali");
         user.setLastName("sali");
-        user.setUsername("ali");
+        user.setUsername("ali1");
         user.setDisplayName("ali");
         user.setPassword(passwordEncoder.encode("test1234"));
         user.setRole(Role.USER);
         user.setSubscription(subscriptionRepository.findById(1).orElse(null));
+        user.setBalance(BigDecimal.valueOf(50));
         return userRepository.save(user);
     }
 
@@ -200,11 +193,12 @@ public class BaseTest {
         User user = new User();
         user.setFirstName("ali");
         user.setLastName("sali");
-        user.setUsername("ali");
+        user.setUsername("ali2");
         user.setDisplayName("ali");
         user.setPassword(passwordEncoder.encode("test1234"));
         user.setRole(Role.USER);
         user.setSubscription(subscriptionRepository.findById(2).orElse(null));
+        user.setBalance(BigDecimal.valueOf(50));
         return userRepository.save(user);
     }
 
@@ -212,11 +206,12 @@ public class BaseTest {
         User user = new User();
         user.setFirstName("ali");
         user.setLastName("sali");
-        user.setUsername("ali");
+        user.setUsername("ali3");
         user.setDisplayName("ali");
         user.setPassword(passwordEncoder.encode("test1234"));
         user.setRole(Role.USER);
         user.setSubscription(subscriptionRepository.findById(3).orElse(null));
+        user.setBalance(BigDecimal.valueOf(50));
         return userRepository.save(user);
     }
 
@@ -229,6 +224,12 @@ public class BaseTest {
         rent.setExpectedReturnDate(LocalDate.now().plusMonths(1));
         user.getRents().add(rent);
         return rentRepository.save(rent);
+    }
+
+    protected static BigDecimal amountToPay(Subscription subscription) {
+        return subscription.getCost()
+                .divide(BigDecimal.valueOf(LocalDate.now().lengthOfMonth()), RoundingMode.UP)
+                .multiply(BigDecimal.valueOf(LocalDate.now().lengthOfMonth() - LocalDate.now().getDayOfMonth()));
     }
 
 }

@@ -1,5 +1,6 @@
 package com.kodar.academy.Library.service;
 
+import com.kodar.academy.Library.model.constants.Constants;
 import com.kodar.academy.Library.model.dto.user.UserBalanceDTO;
 import com.kodar.academy.Library.model.dto.user.UserCPDTO;
 import com.kodar.academy.Library.model.dto.user.UserEditDTO;
@@ -137,6 +138,9 @@ public class UserService {
             else {
                 if(userSubscription.getCost().compareTo(newSubscription.getCost()) < 0) {
                     user.setBalance(user.getBalance().add(amountToPay(userSubscription)).subtract(amountToPay(newSubscription)));
+                    if(user.getBalance().compareTo(newSubscription.getCost()) < 0) {
+                        throw new InsufficientBalanceException(id);
+                    }
                 }
                 else if(userSubscription.getCost().compareTo(newSubscription.getCost()) > 0) {
                     if(user.getRents().stream().filter(rent -> rent.getReturnDate() == null).count()
@@ -209,7 +213,8 @@ public class UserService {
         for(User u : users) {
             for(Rent r : u.getRents()) {
                 if(r.getReturnDate() == null && r.getExpectedReturnDate().isBefore(LocalDate.now())) {
-                    u.setBalance(u.getBalance().subtract(BigDecimal.valueOf(0.2)).setScale(2, RoundingMode.DOWN));
+                    u.setBalance(u.getBalance().subtract(BigDecimal.valueOf(Constants.TAX_PER_DAY))
+                            .setScale(2, RoundingMode.DOWN));
                 }
             }
         }

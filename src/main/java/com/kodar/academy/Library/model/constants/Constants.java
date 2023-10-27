@@ -36,7 +36,6 @@ public class Constants {
     public static final String RENT_CAP_MSG = "User: %s reached max amount of rented books at once";
     public static final String NO_SUBSCRIPTION = "User with id %d has no subscription";
     public static final String INSUFFICIENT_BALANCE = "User with id %d has insufficient balance to subscribe";
-    public static final String SAME_SUBSCRIPTION = "Already subscribed with that plan";
     public static final String CAP_DOWNGRADE_EXCEPTION_MSG = "Can't downgrade plan to %s because you have more than %d rented books";
     //controller messages
     public static final String SUCCESSFUL_BOOK_DELETE = "Book successfully deleted";
@@ -66,6 +65,9 @@ public class Constants {
     public static final String DISPLAY_NAME_LENGTH = "Display name must be between 3 and 32 characters";
     public static final String DUPLICATE_USERNAME = "Username already taken";
     public static final String PAST_DATE_EXPECTED = "Past date expected";
-    public static final String MIN_BALANCE = "Can't add less than 1 euro";
-
+    public static final String MIN_BALANCE = "Can't add negative balance";
+    public static final String LESS_THAN_1_INVALID = "cant be less than 1";
+    public static final String MORE_THAN_3_INVALID = "cant be more than 3";
+    //service constants
+    public static final double TAX_PER_DAY = 0.2;
 }

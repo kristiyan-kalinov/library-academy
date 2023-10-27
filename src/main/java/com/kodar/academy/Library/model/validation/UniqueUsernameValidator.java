@@ -6,7 +6,7 @@ import jakarta.validation.ConstraintValidatorContext;
 
 public class UniqueUsernameValidator implements ConstraintValidator<UniqueUsername, String> {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public UniqueUsernameValidator(UserRepository userRepository) {
         this.userRepository = userRepository;
