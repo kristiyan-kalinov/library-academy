@@ -10,6 +10,7 @@ public class Constants {
     public static final String UPDATE_REASON_ACTION = "UPDATE deactivation reason";
     public static final String UPDATE_TOTAL_QUANTITY_ACTION = "UPDATE total quantity";
     public static final String UPDATE_AVAILABLE_QUANTITY_ACTION = "UPDATE available quantity";
+    public static final String SUCCESS = "Success";
     //entity fields
     public static final String TITLE = "title";
     public static final String PUBLISHER = "publisher";
@@ -68,6 +69,8 @@ public class Constants {
     public static final String MIN_BALANCE = "Can't add negative balance";
     public static final String LESS_THAN_1_INVALID = "cant be less than 1";
     public static final String MORE_THAN_3_INVALID = "cant be more than 3";
+    public static final String DUPLICATE_ISBN = "ISBN already exists";
+    public static final String GENRE_NOT_EXISTING = "Genre does not exist";
     //service constants
     public static final double TAX_PER_DAY = 0.2;
 }

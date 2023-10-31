@@ -1,6 +1,7 @@
 package com.kodar.academy.Library.model.eventlistener;
 
 import com.kodar.academy.Library.service.BookAuditLogService;
+import com.kodar.academy.Library.service.BookXMLImportAuditService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -9,10 +10,13 @@ import org.springframework.stereotype.Component;
 public class BookEventListener {
 
     private final BookAuditLogService bookAuditLogService;
+    private final BookXMLImportAuditService bookXMLImportAuditService;
 
     @Autowired
-    public BookEventListener(BookAuditLogService bookAuditLogService) {
+    public BookEventListener(BookAuditLogService bookAuditLogService,
+                             BookXMLImportAuditService bookXMLImportAuditService) {
         this.bookAuditLogService = bookAuditLogService;
+        this.bookXMLImportAuditService = bookXMLImportAuditService;
     }
 
     @EventListener
@@ -48,6 +52,16 @@ public class BookEventListener {
     @EventListener
     void handleCreateEvent(BookCreateEvent bookCreateEvent) {
         bookAuditLogService.createBookAuditLog(bookCreateEvent);
+    }
+
+    @EventListener
+    void handleSuccessfulImportEvent(BookXMLImportSuccessEvent bookXMLImportSuccessEvent) {
+        bookXMLImportAuditService.createBookXMLImportAudit(bookXMLImportSuccessEvent);
+    }
+
+    @EventListener
+    void handleFailedImportEvent(BookXMLImportFailEvent bookXMLImportFailEvent) {
+        bookXMLImportAuditService.createBookXMLImportAudit(bookXMLImportFailEvent);
     }
 
 }

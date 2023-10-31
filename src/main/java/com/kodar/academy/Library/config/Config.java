@@ -1,7 +1,11 @@
 package com.kodar.academy.Library.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -20,6 +24,17 @@ import javax.sql.DataSource;
 @EnableMethodSecurity
 @EnableScheduling
 public class Config {
+
+    @Bean
+    public XmlMapper xmlMapper() {
+        return new XmlMapper();
+    }
+
+    @Bean
+    @Primary
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper().registerModule(new JavaTimeModule());
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

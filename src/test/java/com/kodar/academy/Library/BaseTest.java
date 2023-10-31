@@ -229,7 +229,7 @@ public class BaseTest {
     protected static BigDecimal amountToPay(Subscription subscription) {
         return subscription.getCost()
                 .divide(BigDecimal.valueOf(LocalDate.now().lengthOfMonth()), RoundingMode.UP)
-                .multiply(BigDecimal.valueOf(LocalDate.now().lengthOfMonth() - LocalDate.now().getDayOfMonth()));
+                .multiply(BigDecimal.valueOf(LocalDate.now().lengthOfMonth() - LocalDate.now().getDayOfMonth() + 1));
     }
 
 }

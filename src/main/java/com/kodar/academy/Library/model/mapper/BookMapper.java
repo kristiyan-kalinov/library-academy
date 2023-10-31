@@ -4,7 +4,9 @@ import com.kodar.academy.Library.model.dto.book.BookCreateDTO;
 import com.kodar.academy.Library.model.dto.book.BookResponseDTO;
 import com.kodar.academy.Library.model.entity.Book;
 import com.kodar.academy.Library.model.entity.BookAuditLog;
+import com.kodar.academy.Library.model.entity.BookXMLImportAudit;
 import com.kodar.academy.Library.model.eventlistener.BookBaseEvent;
+import com.kodar.academy.Library.model.eventlistener.BookXMLImportBaseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +56,16 @@ public class BookMapper {
         target.setBookId(source.getBookId());
         target.setOldValue(source.getOldValue());
         target.setNewValue(source.getNewValue());
+        return target;
+    }
+
+    public static BookXMLImportAudit mapToBookXMLImportAudit(BookXMLImportBaseEvent source) {
+        logger.info("mapToBookXMLImportAudit called");
+
+        BookXMLImportAudit target = new BookXMLImportAudit();
+        target.setZipFileName(source.getZipFileName());
+        target.setXmlFileName(source.getXmlFileName());
+        target.setMessage(source.getMessage());
         return target;
     }
 

@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -88,6 +89,13 @@ public class BookController {
     @PreAuthorize("@rentService.checkAuth(#id) == authentication.name")
     public ResponseEntity<RentResponseDTO> returnBook(@PathVariable("id") int id) {
         return new ResponseEntity<>(rentService.returnRent(id), HttpStatus.OK);
+    }
+
+    @PostMapping("/books/xml-import")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<String> importBooks() throws IOException {
+        return new ResponseEntity<>(bookService.xmlImport("src/main/resources/zips-to-import"),
+                HttpStatus.CREATED);
     }
 
 }

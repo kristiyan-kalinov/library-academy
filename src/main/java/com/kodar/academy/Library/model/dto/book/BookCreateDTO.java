@@ -3,6 +3,7 @@ package com.kodar.academy.Library.model.dto.book;
 import com.kodar.academy.Library.model.constants.Constants;
 import com.kodar.academy.Library.model.dto.author.AuthorDTO;
 import com.kodar.academy.Library.model.dto.genre.GenreDTO;
+import com.kodar.academy.Library.model.validation.UniqueIsbn;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -13,6 +14,7 @@ import java.util.Set;
 public class BookCreateDTO {
 
     @NotBlank(message = Constants.ISBN_REQUIRED)
+    @UniqueIsbn
 //    @Pattern(regexp = "^(?=(?:\\D*\\d){13}\\D*$)\\d{1,5}[-\\s]?\\d{1,7}[-\\s]?\\d{1,6}[-\\s]?\\d{1}$\n",
 //            message = "Invalid ISBN format")
     private String isbn;
@@ -23,7 +25,7 @@ public class BookCreateDTO {
     @Size(min = 2, max = 64, message = Constants.PUBLISHER_LENGTH)
     private String publisher;
     private short year;
-    private Set<GenreDTO> genres;
+    private Set<@Valid GenreDTO> genres;
     private Set<@Valid AuthorDTO> authors;
     @Min(value = 0, message = Constants.TOTAL_QUANTITY_MIN_VALUE)
     private int totalQuantity;
