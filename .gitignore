@@ -3,6 +3,10 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+src/main/resources/imported-zips/*.xml
+src/main/resources/imported-zips/*.zip
+src/main/resources/zips-to-import/*.xml
+src/main/resources/zips-to-import/*.zip
 
 ### STS ###
 .apt_generated
