@@ -38,6 +38,8 @@ public class Constants {
     public static final String NO_SUBSCRIPTION = "User with id %d has no subscription";
     public static final String INSUFFICIENT_BALANCE = "User with id %d has insufficient balance";
     public static final String CAP_DOWNGRADE_EXCEPTION_MSG = "Can't downgrade plan to %s because you have more than %d rented books";
+    public static final String INVALID_ZIP = "Invalid zip";
+    public static final String INVALID_FILE = "Only .zip files allowed";
     //controller messages
     public static final String SUCCESSFUL_BOOK_DELETE = "Book successfully deleted";
     public static final String SUCCESSFUL_USER_DELETE = "User successfully deleted";
@@ -73,4 +75,6 @@ public class Constants {
     public static final String GENRE_NOT_EXISTING = "Genre does not exist";
     //service constants
     public static final double TAX_PER_DAY = 0.2;
+    //db field values
+    public static final String XML_VALIDATION_MSG = "ISBN is required;Title is required;Title must be between 1 and 255 characters;Publisher is required;Publisher must be between 2 and 64 characters;Adv does not exist;First name is required;First name must be between 1 and 64 characters;First name must contain only letters;Last name is required;Last name must be between 1 and 64 characters;Last name must contain only letters;Total quantity can't be set to less than 0";
 }

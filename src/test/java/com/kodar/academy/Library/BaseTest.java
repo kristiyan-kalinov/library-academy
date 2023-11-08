@@ -1,5 +1,6 @@
 package com.kodar.academy.Library;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kodar.academy.Library.model.dto.author.AuthorDTO;
 import com.kodar.academy.Library.model.dto.book.BookCreateDTO;
 import com.kodar.academy.Library.model.entity.Author;
@@ -13,6 +14,7 @@ import com.kodar.academy.Library.model.enums.Role;
 import com.kodar.academy.Library.model.mapper.AuthorMapper;
 import com.kodar.academy.Library.model.mapper.GenreMapper;
 import com.kodar.academy.Library.repository.BookRepository;
+import com.kodar.academy.Library.repository.BookXMLImportAuditRepository;
 import com.kodar.academy.Library.repository.GenreRepository;
 import com.kodar.academy.Library.repository.RentRepository;
 import com.kodar.academy.Library.repository.SubscriptionRepository;
@@ -21,6 +23,7 @@ import com.kodar.academy.Library.service.AuthorService;
 import com.kodar.academy.Library.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -48,6 +51,12 @@ public class BaseTest {
     protected SubscriptionRepository subscriptionRepository;
     @Autowired
     protected UserService userService;
+    @Autowired
+    protected MockMvc mockMvc;
+    @Autowired
+    protected ObjectMapper objectMapper;
+    @Autowired
+    protected BookXMLImportAuditRepository bookXMLImportAuditRepository;
 
     protected Author genAuthor1(){
         AuthorDTO author = new AuthorDTO();

@@ -24,6 +24,8 @@ import com.kodar.academy.Library.model.exceptions.BookNotFoundException;
 import com.kodar.academy.Library.model.exceptions.DeleteActiveBookException;
 import com.kodar.academy.Library.model.exceptions.InsufficientBookTotalQuantityException;
 import com.kodar.academy.Library.model.exceptions.InvalidDeactReasonException;
+import com.kodar.academy.Library.model.exceptions.InvalidFileException;
+import com.kodar.academy.Library.model.exceptions.InvalidZipException;
 import com.kodar.academy.Library.model.mapper.BookMapper;
 import com.kodar.academy.Library.model.specifications.Specs;
 import com.kodar.academy.Library.repository.BookAuditLogRepository;
@@ -246,6 +248,24 @@ public class BookService {
     @Transactional
     public String xmlImport(String folderPath) throws IOException {
         File folder = new File(folderPath);
+        for(File file : folder.listFiles()) {
+            if(!file.getName().endsWith(".zip") && !file.getName().endsWith(".placeholder")) {
+                throw new InvalidFileException();
+            }
+        }
+        for(File file : folder.listFiles()) {
+            if(file.getName().endsWith(".zip")) {
+                try (ZipFile zipFile = new ZipFile(file)) {
+                    Enumeration<? extends ZipEntry> entries = zipFile.entries();
+                    while (entries.hasMoreElements()) {
+                        ZipEntry entry = entries.nextElement();
+                        if(!entry.getName().endsWith(".xml")) {
+                            throw new InvalidZipException();
+                        }
+                    }
+                }
+            }
+        }
         int counter = 0;
         for(File file : folder.listFiles()) {
             if(file.getName().endsWith(".zip")) {

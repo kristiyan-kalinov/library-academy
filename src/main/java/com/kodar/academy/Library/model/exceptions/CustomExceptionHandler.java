@@ -159,6 +159,22 @@ public class CustomExceptionHandler {
         return message;
     }
 
+    @ExceptionHandler(InvalidZipException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ErrorMessage invalidZipException(InvalidZipException ex) {
+        ErrorMessage message = buildExceptionResponse(ex);
+        message.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        return message;
+    }
+
+    @ExceptionHandler(InvalidFileException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ErrorMessage invalidFileException(InvalidFileException ex) {
+        ErrorMessage message = buildExceptionResponse(ex);
+        message.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        return message;
+    }
+
     private ErrorMessage buildExceptionResponse(RuntimeException ex) {
         List<String> msgsList = new ArrayList<>();
         msgsList.add(ex.getMessage());

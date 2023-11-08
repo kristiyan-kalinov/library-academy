@@ -1,7 +1,6 @@
 package com.kodar.academy.Library;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kodar.academy.Library.model.constants.Constants;
 import com.kodar.academy.Library.model.dto.book.BookChangeStatusDTO;
 import com.kodar.academy.Library.model.dto.book.BookCreateDTO;
@@ -12,6 +11,7 @@ import com.kodar.academy.Library.model.dto.rent.RentCreateDTO;
 import com.kodar.academy.Library.model.dto.rent.RentResponseDTO;
 import com.kodar.academy.Library.model.entity.Author;
 import com.kodar.academy.Library.model.entity.Book;
+import com.kodar.academy.Library.model.entity.BookXMLImportAudit;
 import com.kodar.academy.Library.model.entity.Genre;
 import com.kodar.academy.Library.model.entity.Rent;
 import com.kodar.academy.Library.model.entity.User;
@@ -20,23 +20,31 @@ import com.kodar.academy.Library.model.exceptions.ErrorMessage;
 import com.kodar.academy.Library.model.mapper.AuthorMapper;
 import com.kodar.academy.Library.model.mapper.GenreMapper;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -49,11 +57,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
 public class BookControllerIntegrationTest extends BaseTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    private ObjectMapper objectMapper;
 
     private static final Set<String> bookEditValidationMessages = new HashSet<>() {{
         add(Constants.TITLE_REQUIRED);
@@ -1081,5 +1084,234 @@ public class BookControllerIntegrationTest extends BaseTest {
         Assertions.assertNotNull(response);
         Assertions.assertEquals(String.format(Constants.INSUFFICIENT_BALANCE, user.getId()),
                 response.getMessages().get(0));
+    }
+
+    //xmlImport
+    @Nested
+    class XmlImportSuccess extends BaseTest{
+        @BeforeEach
+        void init() throws IOException {
+            Path zip1From = Paths.get("src/test/resources/success-test1.zip");
+            Path zip1To = Paths.get("src/main/resources/zips-to-import/success-test1.zip");
+            Path zip2From = Paths.get("src/test/resources/success-test2.zip");
+            Path zip2To = Paths.get("src/main/resources/zips-to-import/success-test2.zip");
+            Files.copy(zip1From, zip1To, StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(zip2From, zip2To, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        @AfterEach
+        void cleanUp() throws IOException {
+            Path zip1 = Paths.get("src/main/resources/imported-zips/success-test1.zip");
+            Path zip2 = Paths.get("src/main/resources/imported-zips/success-test2.zip");
+            Files.delete(zip1);
+            Files.delete(zip2);
+        }
+
+        @Test
+        @Transactional
+        void xmlImport_Success() throws Exception {
+            User user = genAdmin();
+            String expectedIsbn1 = "1-123-123-123-123";
+            String expectedIsbn2 = "2-456-456-456-456";
+            String expectedIsbn3 = "3-789-789-789-789";
+            Assertions.assertNull(bookRepository.findByIsbn(expectedIsbn1).orElse(null));
+            Assertions.assertNull(bookRepository.findByIsbn(expectedIsbn2).orElse(null));
+            Assertions.assertNull(bookRepository.findByIsbn(expectedIsbn3).orElse(null));
+
+            MockHttpServletResponse result = this.mockMvc.perform(post("/books/xml-import")
+                            .with(user(user.getUsername()).authorities(new SimpleGrantedAuthority(Role.ADMIN.toString()))))
+                    .andExpect(MockMvcResultMatchers.status().isCreated())
+                    .andReturn().getResponse();
+
+            String response = result.getContentAsString();
+
+            Book book1 = bookRepository.findByIsbn(expectedIsbn1).orElse(null);
+            Book book2 = bookRepository.findByIsbn(expectedIsbn2).orElse(null);
+            Book book3 = bookRepository.findByIsbn(expectedIsbn3).orElse(null);
+            BookXMLImportAudit bookXMLImportAudit1 = bookXMLImportAuditRepository.findLastAuditByZipName(
+                    "success-test1.zip").orElse(null);
+            BookXMLImportAudit bookXMLImportAudit2 = bookXMLImportAuditRepository.findLastAuditByZipName(
+                    "success-test2.zip").orElse(null);
+
+            Assertions.assertNotNull(response);
+            Assertions.assertEquals("Successfully imported 3 books", response);
+
+            Assertions.assertNotNull(book1);
+            Assertions.assertNotNull(book2);
+            Assertions.assertNotNull(book3);
+            Assertions.assertNotNull(bookXMLImportAudit1);
+            Assertions.assertNotNull(bookXMLImportAudit2);
+        }
+    }
+
+    @Nested
+    class XmlImportValidationException extends BaseTest{
+        @BeforeEach
+        void init() throws IOException {
+            Path zip1From = Paths.get("src/test/resources/validations.zip");
+            Path zip1To = Paths.get("src/main/resources/zips-to-import/validations.zip");
+            Files.copy(zip1From, zip1To, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        @AfterEach
+        void cleanUp() throws IOException {
+            Path zip1 = Paths.get("src/main/resources/zips-to-import/validations.zip");
+            Files.delete(zip1);
+        }
+
+        @Test
+        @Transactional
+        void xmlImport_ValidationException() throws Exception {
+            User user = genAdmin();
+
+            MockHttpServletResponse result = this.mockMvc.perform(post("/books/xml-import")
+                            .with(user(user.getUsername()).authorities(new SimpleGrantedAuthority(Role.ADMIN.toString()))))
+                    .andExpect(MockMvcResultMatchers.status().isCreated())
+                    .andReturn().getResponse();
+
+            BookXMLImportAudit bookXMLImportAudit1 = bookXMLImportAuditRepository.findLastAuditByZipNameAndXmlName(
+                    "validations.zip", "book1.xml")
+                    .orElse(null);
+            BookXMLImportAudit bookXMLImportAudit2 = bookXMLImportAuditRepository.findLastAuditByZipNameAndXmlName(
+                    "validations.zip", "book2.xml")
+                    .orElse(null);
+
+            String response = result.getContentAsString();
+
+            Assertions.assertNotNull(response);
+            Assertions.assertEquals("Fail", response);
+
+            Assertions.assertNotNull(bookXMLImportAudit1);
+            Assertions.assertNotNull(bookXMLImportAudit2);
+            Assertions.assertEquals(Constants.DUPLICATE_ISBN, bookXMLImportAudit1.getMessage());
+            Assertions.assertEquals(Constants.XML_VALIDATION_MSG, bookXMLImportAudit2.getMessage());
+        }
+    }
+
+    @Nested
+    class XmlImportInvalidFileException extends BaseTest{
+        @BeforeEach
+        void init() throws IOException {
+            Path zip1From = Paths.get("src/test/resources/success-test1.zip");
+            Path zip1To = Paths.get("src/main/resources/zips-to-import/success-test1.zip");
+            Path zip2From = Paths.get("src/test/resources/fail.txt");
+            Path zip2To = Paths.get("src/main/resources/zips-to-import/fail.txt");
+            Files.copy(zip1From, zip1To, StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(zip2From, zip2To, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        @AfterEach
+        void cleanUp() throws IOException {
+            Path zip1 = Paths.get("src/main/resources/zips-to-import/success-test1.zip");
+            Path zip2 = Paths.get("src/main/resources/zips-to-import/fail.txt");
+            Files.delete(zip1);
+            Files.delete(zip2);
+        }
+
+        @Test
+        @Transactional
+        void xmlImport_InvalidFileException() throws Exception {
+            User user = genAdmin();
+
+            MockHttpServletResponse result = this.mockMvc.perform(post("/books/xml-import")
+                            .with(user(user.getUsername()).authorities(new SimpleGrantedAuthority(Role.ADMIN.toString()))))
+                    .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                    .andReturn().getResponse();
+
+            ErrorMessage response = objectMapper.readValue(result.getContentAsString(), new TypeReference<>() {
+            });
+
+            Assertions.assertNotNull(response);
+            Assertions.assertEquals(Constants.INVALID_FILE, response.getMessages().get(0));
+        }
+    }
+
+    @Nested
+    class XmlImportInvalidZipException extends BaseTest{
+        @BeforeEach
+        void init() throws IOException {
+            Path zip1From = Paths.get("src/test/resources/invalid-zip.zip");
+            Path zip1To = Paths.get("src/main/resources/zips-to-import/invalid-zip.zip");
+            Files.copy(zip1From, zip1To, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        @AfterEach
+        void cleanUp() throws IOException {
+            Path zip1 = Paths.get("src/main/resources/zips-to-import/invalid-zip.zip");
+            Files.delete(zip1);
+        }
+
+        @Test
+        @Transactional
+        void xmlImport_InvalidZipException() throws Exception {
+            User user = genAdmin();
+
+            MockHttpServletResponse result = this.mockMvc.perform(post("/books/xml-import")
+                            .with(user(user.getUsername()).authorities(new SimpleGrantedAuthority(Role.ADMIN.toString()))))
+                    .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                    .andReturn().getResponse();
+
+            ErrorMessage response = objectMapper.readValue(result.getContentAsString(), new TypeReference<>() {
+            });
+
+            Assertions.assertNotNull(response);
+            Assertions.assertEquals(Constants.INVALID_ZIP, response.getMessages().get(0));
+        }
+    }
+
+    @Test
+    @Transactional
+    void simultaneous_editBook() throws Exception {
+        User user = genAdmin();
+        BookEditRequestDTO request1 = new BookEditRequestDTO();
+        request1.setPublisher("qwerty");
+        request1.setTitle("asdfg");
+        request1.setTotalQuantity(10);
+        BookEditRequestDTO request2 = new BookEditRequestDTO();
+        request2.setPublisher("zxc");
+        request2.setTitle("asdfg");
+        request2.setTotalQuantity(10);
+        Book book = bookRepository.findById(710).orElse(null);
+
+        Runnable r1 = () -> {
+            try {
+                MockHttpServletResponse result = this.mockMvc.perform(put("/books/edit/" + book.getId())
+                                .with(user(user.getUsername()).authorities(new SimpleGrantedAuthority(Role.ADMIN.toString())))
+                                .accept(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request1))
+                                .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(MockMvcResultMatchers.status().isOk())
+                        .andReturn().getResponse();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            System.out.println(book.getPublisher());
+        };
+
+        Runnable r2 = () -> {
+            try {
+                MockHttpServletResponse result = this.mockMvc.perform(put("/books/edit/" + book.getId())
+                                .with(user(user.getUsername()).authorities(new SimpleGrantedAuthority(Role.ADMIN.toString())))
+                                .accept(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request2))
+                                .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(MockMvcResultMatchers.status().isOk())
+                        .andReturn().getResponse();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            System.out.println(book.getPublisher());
+        };
+
+        Thread t1 = new Thread(r1);
+        Thread t2 = new Thread(r2);
+
+        t1.start();
+        t2.start();
+        t1.join();
+        t2.join();
+
+        Assertions.assertEquals("zxc", book.getPublisher());
+        Assertions.assertEquals("qwerty", book.getPublisher());
     }
 }
